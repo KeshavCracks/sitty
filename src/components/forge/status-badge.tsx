@@ -1,7 +1,8 @@
 "use client";
 
 /**
- * Status badges for tasks and steps — colored pill + optional dot.
+ * Status badges for tasks and steps — rig.ai palette.
+ * Black + orange only. Orange signals active/success, muted for other states.
  */
 
 import * as React from "react";
@@ -13,45 +14,38 @@ const TASK_STATUS_STYLES: Record<
   { label: string; className: string; dot: string }
 > = {
   queued: {
-    label: "Queued",
-    className:
-      "bg-muted/40 text-muted-foreground border-border",
+    label: "QUEUED",
+    className: "bg-muted/30 text-muted-foreground border-border",
     dot: "bg-muted-foreground",
   },
   planning: {
-    label: "Planning",
-    className:
-      "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/30",
-    dot: "bg-amber-500",
+    label: "PLANNING",
+    className: "bg-primary/10 text-primary border-primary/40",
+    dot: "bg-primary",
   },
   executing: {
-    label: "Executing",
-    className:
-      "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30",
-    dot: "bg-emerald-500 pulse-ring",
+    label: "EXECUTING",
+    className: "bg-primary/10 text-primary border-primary/40",
+    dot: "bg-primary pulse-ring",
   },
   reviewing: {
-    label: "Reviewing",
-    className:
-      "bg-sky-500/10 text-sky-600 dark:text-sky-400 border-sky-500/30",
-    dot: "bg-sky-500",
+    label: "REVIEWING",
+    className: "bg-primary/10 text-primary border-primary/40",
+    dot: "bg-primary",
   },
   completed: {
-    label: "Completed",
-    className:
-      "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border-emerald-500/30",
-    dot: "bg-emerald-500",
+    label: "COMPLETED",
+    className: "bg-primary/15 text-primary border-primary/40",
+    dot: "bg-primary",
   },
   failed: {
-    label: "Failed",
-    className:
-      "bg-red-500/10 text-red-600 dark:text-red-400 border-red-500/30",
-    dot: "bg-red-500",
+    label: "FAILED",
+    className: "bg-muted/30 text-muted-foreground border-border",
+    dot: "bg-muted-foreground",
   },
   cancelled: {
-    label: "Cancelled",
-    className:
-      "bg-muted/40 text-muted-foreground border-border",
+    label: "CANCELLED",
+    className: "bg-muted/30 text-muted-foreground border-border",
     dot: "bg-muted-foreground",
   },
 };
@@ -61,30 +55,27 @@ const STEP_STATUS_STYLES: Record<
   { label: string; className: string; dot: string }
 > = {
   pending: {
-    label: "Pending",
+    label: "PENDING",
     className: "bg-muted/30 text-muted-foreground border-border",
     dot: "bg-muted-foreground/50",
   },
   in_progress: {
-    label: "Running",
-    className:
-      "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30",
-    dot: "bg-emerald-500 pulse-ring",
+    label: "RUNNING",
+    className: "bg-primary/10 text-primary border-primary/40",
+    dot: "bg-primary pulse-ring",
   },
   completed: {
-    label: "Done",
-    className:
-      "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border-emerald-500/30",
-    dot: "bg-emerald-500",
+    label: "DONE",
+    className: "bg-primary/15 text-primary border-primary/40",
+    dot: "bg-primary",
   },
   failed: {
-    label: "Failed",
-    className:
-      "bg-red-500/10 text-red-600 dark:text-red-400 border-red-500/30",
-    dot: "bg-red-500",
+    label: "FAILED",
+    className: "bg-muted/30 text-muted-foreground border-border",
+    dot: "bg-muted-foreground",
   },
   skipped: {
-    label: "Skipped",
+    label: "SKIPPED",
     className: "bg-muted/30 text-muted-foreground border-border",
     dot: "bg-muted-foreground/30",
   },
@@ -101,12 +92,13 @@ export function TaskStatusBadge({
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-medium",
+        "inline-flex items-center gap-1.5 border px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-[0.06em]",
         s.className,
         className
       )}
+      style={{ fontFamily: "var(--font-rig-mono), monospace", borderRadius: "0" }}
     >
-      <span className={cn("size-1.5 rounded-full", s.dot)} />
+      <span className={cn("size-1.5", s.dot)} />
       {s.label}
     </span>
   );
@@ -123,12 +115,13 @@ export function StepStatusBadge({
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-[11px] font-medium",
+        "inline-flex items-center gap-1.5 border px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.06em]",
         s.className,
         className
       )}
+      style={{ fontFamily: "var(--font-rig-mono), monospace", borderRadius: "0" }}
     >
-      <span className={cn("size-1.5 rounded-full", s.dot)} />
+      <span className={cn("size-1.5", s.dot)} />
       {s.label}
     </span>
   );
@@ -140,20 +133,18 @@ export function PriorityBadge({
   priority: "low" | "medium" | "high" | "critical";
 }) {
   const map = {
-    low: "bg-muted/40 text-muted-foreground border-border",
-    medium:
-      "bg-sky-500/10 text-sky-600 dark:text-sky-400 border-sky-500/30",
-    high:
-      "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/30",
-    critical:
-      "bg-red-500/10 text-red-600 dark:text-red-400 border-red-500/30",
+    low: "bg-muted/30 text-muted-foreground border-border",
+    medium: "bg-muted/30 text-foreground border-border",
+    high: "bg-primary/10 text-primary border-primary/40",
+    critical: "bg-primary/15 text-primary border-primary/50",
   };
   return (
     <span
       className={cn(
-        "inline-flex items-center rounded-md border px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide",
+        "inline-flex items-center border px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-[0.08em]",
         map[priority]
       )}
+      style={{ fontFamily: "var(--font-rig-mono), monospace", borderRadius: "0" }}
     >
       {priority}
     </span>

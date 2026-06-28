@@ -154,7 +154,7 @@ export function NewTaskView() {
       {/* Header */}
       <div className="flex flex-col gap-2">
         <div className="flex items-center gap-2">
-          <Badge variant="outline" className="gap-1.5 border-emerald-500/30 bg-emerald-500/5 text-emerald-600 dark:text-emerald-400">
+          <Badge variant="outline" className="gap-1.5 border-primary/40 bg-primary/5 text-primary dark:text-primary">
             <Sparkles className="size-3" />
             New task
           </Badge>
@@ -179,7 +179,7 @@ export function NewTaskView() {
             <button
               key={s.title}
               onClick={() => handleSample(s)}
-              className="group rounded-lg border border-border/60 bg-card/40 p-3 text-left transition-colors hover:border-emerald-500/30 hover:bg-card"
+              className="group rounded-md border border-border/60 bg-card/40 p-3 text-left transition-colors hover:border-primary/40 hover:bg-card"
             >
               <div className="text-sm font-medium">{s.title}</div>
               <div className="mt-1 line-clamp-2 text-xs text-muted-foreground">
@@ -342,7 +342,7 @@ export function NewTaskView() {
               <div className="flex items-center justify-between rounded-md border border-border/60 bg-muted/20 p-2.5">
                 <div>
                   <div className="flex items-center gap-1.5 text-xs font-medium">
-                    <Wand2 className="size-3 text-emerald-500" />
+                    <Wand2 className="size-3 text-primary" />
                     LLM planner
                   </div>
                   <div className="mt-0.5 text-[10px] text-muted-foreground">

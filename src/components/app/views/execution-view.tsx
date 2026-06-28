@@ -94,7 +94,7 @@ export function ExecutionView() {
               {task.pullRequestNumber && (
                 <Badge
                   variant="outline"
-                  className="border-emerald-500/30 bg-emerald-500/10 text-[10px] text-emerald-600 dark:text-emerald-400"
+                  className="border-primary/40 bg-primary/10 text-[10px] text-primary dark:text-primary"
                 >
                   PR #{task.pullRequestNumber}
                 </Badge>
@@ -200,7 +200,7 @@ function EmptyState() {
   const setView = useAppStore((s) => s.setView);
   return (
     <div className="flex h-[calc(100vh-4rem)] flex-col items-center justify-center p-8 text-center">
-      <div className="mb-6 flex size-16 items-center justify-center rounded-2xl border border-border/60 bg-card/40">
+      <div className="mb-6 flex size-16 items-center justify-center rounded-md border border-border/60 bg-card/40">
         <Bot className="size-8 text-muted-foreground" />
       </div>
       <h2 className="text-lg font-semibold">No active task</h2>
@@ -269,14 +269,14 @@ function PlanPanel({
         {/* Risks */}
         {plan && plan.risks.length > 0 && (
           <div>
-            <div className="mb-1.5 flex items-center gap-1.5 text-[10px] font-medium uppercase tracking-wider text-amber-600 dark:text-amber-400">
+            <div className="mb-1.5 flex items-center gap-1.5 text-[10px] font-medium uppercase tracking-wider text-primary dark:text-primary">
               <AlertTriangle className="size-3" />
               Risks
             </div>
             <ul className="space-y-1">
               {plan.risks.map((r, i) => (
                 <li key={i} className="flex items-start gap-1.5 text-xs text-muted-foreground">
-                  <span className="mt-1 size-1 shrink-0 rounded-full bg-amber-500/60" />
+                  <span className="mt-1 size-1 shrink-0 rounded-full bg-primary/60" />
                   <span>{r}</span>
                 </li>
               ))}
@@ -309,10 +309,10 @@ function PlanPanel({
                   <span
                     className={cn(
                       "absolute -left-[1.4rem] flex size-3 items-center justify-center rounded-full border-2 border-background",
-                      step.status === "completed" && "bg-emerald-500",
-                      step.status === "in_progress" && "bg-emerald-500/30 ring-2 ring-emerald-500/40 pulse-ring",
+                      step.status === "completed" && "bg-primary",
+                      step.status === "in_progress" && "bg-primary/40 ring-2 ring-primary/40 pulse-ring",
                       step.status === "pending" && "bg-muted-foreground/30",
-                      step.status === "failed" && "bg-red-500",
+                      step.status === "failed" && "bg-muted-foreground",
                       step.status === "skipped" && "bg-muted-foreground/20"
                     )}
                   >
@@ -320,7 +320,7 @@ function PlanPanel({
                       <CheckCircle2 className="size-2 text-background" />
                     )}
                     {step.status === "in_progress" && (
-                      <Loader2 className="size-2 animate-spin text-emerald-500" />
+                      <Loader2 className="size-2 animate-spin text-primary" />
                     )}
                   </span>
 
@@ -328,7 +328,7 @@ function PlanPanel({
                     className={cn(
                       "rounded-md border p-2.5 transition-colors",
                       activeStepId === step.id
-                        ? "border-emerald-500/40 bg-emerald-500/5"
+                        ? "border-primary/40 bg-primary/5"
                         : "border-border/60 bg-card/30"
                     )}
                   >
@@ -383,8 +383,8 @@ function PlanPanel({
 
         {/* Summary (when complete) */}
         {task.status === "completed" && task.summary && (
-          <div className="rounded-md border border-emerald-500/30 bg-emerald-500/5 p-3">
-            <div className="mb-1.5 flex items-center gap-1.5 text-[10px] font-medium uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
+          <div className="rounded-md border border-primary/40 bg-primary/5 p-3">
+            <div className="mb-1.5 flex items-center gap-1.5 text-[10px] font-medium uppercase tracking-wider text-primary dark:text-primary">
               <CheckCircle2 className="size-3" />
               Summary
             </div>
@@ -394,7 +394,7 @@ function PlanPanel({
                 href={`https://github.com/${task.repository}/pull/${task.pullRequestNumber}`}
                 target="_blank"
                 rel="noreferrer"
-                className="mt-2 inline-flex items-center gap-1 text-[11px] font-medium text-emerald-600 dark:text-emerald-400 hover:underline"
+                className="mt-2 inline-flex items-center gap-1 text-[11px] font-medium text-primary dark:text-primary hover:underline"
               >
                 <GitPullRequest className="size-3" />
                 View PR #{task.pullRequestNumber}
@@ -449,10 +449,10 @@ function TerminalPanel({
           key={i}
           className={cn(
             "whitespace-pre-wrap break-all",
-            line.tone === "command" && "text-emerald-500",
-            line.tone === "success" && "text-emerald-400",
-            line.tone === "warn" && "text-amber-400",
-            line.tone === "error" && "text-red-400",
+            line.tone === "command" && "text-primary",
+            line.tone === "success" && "text-primary",
+            line.tone === "warn" && "text-primary",
+            line.tone === "error" && "text-muted-foreground",
             line.tone === "muted" && "text-muted-foreground",
             (!line.tone || line.tone === "default") && "text-foreground/90"
           )}
@@ -460,7 +460,7 @@ function TerminalPanel({
           {line.text}
         </div>
       ))}
-      <div className="terminal-cursor text-emerald-500" />
+      <div className="terminal-cursor text-primary" />
     </div>
   );
 }
@@ -489,7 +489,7 @@ function DiffsPanel({ fileChanges }: { fileChanges: FileChange[] }) {
         {fileChanges.map((fc) => (
           <div
             key={fc.id}
-            className="overflow-hidden rounded-lg border border-border/60 bg-card/40"
+            className="overflow-hidden rounded-md border border-border/60 bg-card/40"
           >
             <div className="flex items-center justify-between border-b border-border/60 bg-muted/30 px-3 py-2">
               <div className="flex items-center gap-2 min-w-0">
@@ -497,10 +497,10 @@ function DiffsPanel({ fileChanges }: { fileChanges: FileChange[] }) {
                 <span className="truncate font-mono text-xs">{fc.path}</span>
               </div>
               <div className="flex items-center gap-2 text-[10px]">
-                <span className="text-emerald-600 dark:text-emerald-400">
+                <span className="text-primary dark:text-primary">
                   +{fc.additions}
                 </span>
-                <span className="text-red-600 dark:text-red-400">
+                <span className="text-muted-foreground dark:text-muted-foreground">
                   −{fc.deletions}
                 </span>
               </div>
@@ -511,10 +511,10 @@ function DiffsPanel({ fileChanges }: { fileChanges: FileChange[] }) {
                   key={i}
                   className={cn(
                     "whitespace-pre",
-                    line.type === "add" && "bg-emerald-500/10 text-emerald-300",
-                    line.type === "del" && "bg-red-500/10 text-red-300",
+                    line.type === "add" && "bg-primary/10 text-primary",
+                    line.type === "del" && "bg-muted-foreground/10 text-muted-foreground",
                     line.type === "context" && "text-muted-foreground",
-                    line.type === "hunk" && "text-sky-400"
+                    line.type === "hunk" && "text-muted-foreground"
                   )}
                 >
                   <span className="inline-block w-6 select-none text-right text-muted-foreground/50">
@@ -533,10 +533,10 @@ function DiffsPanel({ fileChanges }: { fileChanges: FileChange[] }) {
 
 function FileStatusIcon({ status }: { status: FileChange["status"] }) {
   const map = {
-    added: { icon: "+", className: "text-emerald-500" },
-    modified: { icon: "M", className: "text-amber-500" },
-    deleted: { icon: "−", className: "text-red-500" },
-    renamed: { icon: "R", className: "text-sky-500" },
+    added: { icon: "+", className: "text-primary" },
+    modified: { icon: "M", className: "text-primary" },
+    deleted: { icon: "−", className: "text-muted-foreground" },
+    renamed: { icon: "R", className: "text-muted-foreground" },
   };
   const s = map[status];
   return (
@@ -592,10 +592,10 @@ function LogsPanel({
             <span
               className={cn(
                 "shrink-0 rounded px-1 text-[9px] font-bold uppercase",
-                log.level === "info" && "bg-sky-500/10 text-sky-500",
-                log.level === "success" && "bg-emerald-500/10 text-emerald-500",
-                log.level === "warn" && "bg-amber-500/10 text-amber-500",
-                log.level === "error" && "bg-red-500/10 text-red-500",
+                log.level === "info" && "bg-muted-foreground/10 text-muted-foreground",
+                log.level === "success" && "bg-primary/10 text-primary",
+                log.level === "warn" && "bg-primary/10 text-primary",
+                log.level === "error" && "bg-muted-foreground/10 text-muted-foreground",
                 log.level === "debug" && "bg-muted text-muted-foreground"
               )}
             >

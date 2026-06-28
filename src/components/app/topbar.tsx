@@ -132,9 +132,9 @@ export function Topbar() {
           {isRunning && (
             <Badge
               variant="outline"
-              className="border-emerald-500/30 bg-emerald-500/10 text-[10px] text-emerald-600 dark:text-emerald-400"
+              className="border-primary/40 bg-primary/10 text-[10px] text-primary dark:text-primary"
             >
-              <span className="mr-1 size-1.5 rounded-full bg-emerald-500 pulse-ring" />
+              <span className="mr-1 size-1.5 rounded-full bg-primary pulse-ring" />
               {statusLine}
             </Badge>
           )}
@@ -148,7 +148,7 @@ export function Topbar() {
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="outline" size="sm" className="gap-1.5">
-            <Bot className="size-3.5 text-emerald-500" />
+            <Bot className="size-3.5 text-primary" />
             <span className="hidden font-mono text-xs sm:inline">
               {ALL_MODELS.find((m) => m.id === model)?.label ?? model}
             </span>
@@ -169,7 +169,7 @@ export function Topbar() {
               <div className="flex w-full items-center justify-between">
                 <span className="text-sm font-medium">{m.label}</span>
                 {model === m.id && (
-                  <Check className="size-3.5 text-emerald-500" />
+                  <Check className="size-3.5 text-primary" />
                 )}
               </div>
               <div className="flex items-center gap-2 text-[10px] text-muted-foreground">
@@ -178,7 +178,7 @@ export function Topbar() {
                 </span>
                 <span>{(m.contextWindow / 1000).toFixed(0)}k ctx</span>
                 {m.reasoning && (
-                  <span className="text-amber-600 dark:text-amber-400">
+                  <span className="text-primary dark:text-primary">
                     reasoning
                   </span>
                 )}
@@ -203,7 +203,7 @@ export function Topbar() {
           className={cn(
             "size-1.5 rounded-full",
             githubConnected
-              ? "bg-emerald-500"
+              ? "bg-primary"
               : "bg-muted-foreground/40"
           )}
         />

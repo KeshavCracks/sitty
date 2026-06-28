@@ -150,9 +150,9 @@ export function HistoryView() {
                     <TableCell className="pl-4">
                       <div className="flex size-7 items-center justify-center rounded-md bg-muted/40 text-muted-foreground">
                         {t.status === "completed" ? (
-                          <CheckCircle2 className="size-3.5 text-emerald-500" />
+                          <CheckCircle2 className="size-3.5 text-primary" />
                         ) : t.status === "failed" ? (
-                          <XCircle className="size-3.5 text-red-500" />
+                          <XCircle className="size-3.5 text-muted-foreground" />
                         ) : (
                           <Bot className="size-3.5" />
                         )}

@@ -1,5 +1,5 @@
 /**
- * Forge brand mark + custom icons not covered by lucide-react.
+ * Forge brand mark + custom icons — rig.ai palette (black + orange).
  */
 
 import * as React from "react";
@@ -23,8 +23,8 @@ export function ForgeLogo({
     >
       <defs>
         <linearGradient id="forge-grad" x1="0" y1="0" x2="32" y2="32">
-          <stop offset="0%" stopColor="oklch(0.72 0.18 165)" />
-          <stop offset="100%" stopColor="oklch(0.78 0.16 70)" />
+          <stop offset="0%" stopColor="oklch(0.62 0.22 32)" />
+          <stop offset="100%" stopColor="oklch(0.70 0.20 45)" />
         </linearGradient>
       </defs>
       {/* Outer hexagon — the "forge" frame */}
@@ -32,7 +32,7 @@ export function ForgeLogo({
         d="M16 1.5l12.99 7.5v15L16 31.5 3.01 24V9L16 1.5z"
         stroke="url(#forge-grad)"
         strokeWidth="1.5"
-        fill="oklch(0.17 0.01 250 / 0.4)"
+        fill="oklch(0.07 0 0 / 0.6)"
       />
       {/* Inner spark — the agent core */}
       <path
@@ -40,19 +40,25 @@ export function ForgeLogo({
         fill="url(#forge-grad)"
         opacity="0.9"
       />
-      <circle cx="16" cy="16" r="2.2" fill="oklch(0.13 0.008 250)" />
+      <circle cx="16" cy="16" r="2.2" fill="oklch(0.04 0 0)" />
     </svg>
   );
 }
 
 export function ForgeWordmark({ className }: { className?: string }) {
   return (
-    <span className={`inline-flex items-center gap-2 ${className ?? ""}`}>
+    <span
+      className={`inline-flex items-center gap-2 ${className ?? ""}`}
+      style={{ fontFamily: "var(--font-rig-headline), sans-serif" }}
+    >
       <ForgeLogo size={26} />
-      <span className="text-lg font-semibold tracking-tight">
+      <span className="text-lg font-bold tracking-tight">
         Forge
-        <span className="ml-1.5 text-xs font-normal text-muted-foreground">
-          AI Software Engineer
+        <span
+          className="ml-1.5 text-[10px] font-bold uppercase tracking-[0.08em] text-primary"
+          style={{ fontFamily: "var(--font-rig-mono), monospace" }}
+        >
+          AI/SE
         </span>
       </span>
     </span>
@@ -97,3 +103,4 @@ export function SpinnerGear({ className }: { className?: string }) {
     </svg>
   );
 }
+

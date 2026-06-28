@@ -98,9 +98,9 @@ function Navbar() {
     <header
       className="sticky top-0 z-50 transition-colors duration-150"
       style={{
-        background: scrolled ? C.secondary : "transparent",
+        background: scrolled ? C.surface : "transparent",
         borderBottom: scrolled
-          ? `1px solid ${C.borderSubtle}`
+          ? `1px solid ${C.borderSubtleDark}`
           : "1px solid transparent",
       }}
     >
@@ -112,15 +112,15 @@ function Navbar() {
         >
           <div
             className="flex size-7 items-center justify-center"
-            style={{ background: C.primary }}
+            style={{ background: C.tertiary }}
           >
-            <Bot className="size-4" style={{ color: C.tertiary }} />
+            <Bot className="size-4" style={{ color: C.surface }} />
           </div>
           <span
             className="text-[18px] font-bold tracking-tight"
             style={{
               fontFamily: "var(--font-rig-headline)",
-              color: C.primary,
+              color: C.onSurface,
               letterSpacing: "-0.02em",
             }}
           >
@@ -153,37 +153,54 @@ function Navbar() {
               className="text-[12px] font-bold uppercase tracking-[0.06em] transition-colors"
               style={{
                 fontFamily: "var(--font-rig-mono)",
-                color: C.primary,
-                opacity: 0.6,
+                color: C.onSurface,
+                opacity: 0.5,
               }}
               onMouseEnter={(e) => (e.currentTarget.style.opacity = "1")}
-              onMouseLeave={(e) => (e.currentTarget.style.opacity = "0.6")}
+              onMouseLeave={(e) => (e.currentTarget.style.opacity = "0.5")}
             >
               {item.label}
             </a>
           ))}
-        </nav>
-
-        {/* Right */}
-        <div className="flex items-center gap-3">
           <a
             href="https://github.com/KeshavCracks/sitty"
             target="_blank"
             rel="noreferrer"
-            className="hidden sm:flex items-center gap-1.5 text-[12px] font-bold uppercase tracking-[0.06em] transition-colors"
-            style={{ fontFamily: "var(--font-rig-mono)", color: C.primary }}
+            className="text-[12px] font-bold uppercase tracking-[0.06em] transition-colors"
+            style={{ fontFamily: "var(--font-rig-mono)", color: C.onSurface, opacity: 0.5 }}
+            onMouseEnter={(e) => (e.currentTarget.style.opacity = "1")}
+            onMouseLeave={(e) => (e.currentTarget.style.opacity = "0.5")}
           >
-            <Github className="size-4" />
-            REPO
-            <ArrowUpRight className="size-3" />
+            GITHUB
           </a>
+        </nav>
+
+        {/* Right */}
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => enterApp("dashboard")}
+            className="hidden text-[12px] font-bold uppercase tracking-[0.06em] transition-colors sm:block"
+            style={{ fontFamily: "var(--font-rig-mono)", color: C.onSurface, opacity: 0.5 }}
+            onMouseEnter={(e) => (e.currentTarget.style.opacity = "1")}
+            onMouseLeave={(e) => (e.currentTarget.style.opacity = "0.5")}
+          >
+            SIGN IN
+          </button>
           <button
             onClick={() => enterApp("new-task")}
-            className="rig-btn"
-            style={{ height: "40px", padding: "0 20px", fontSize: "12px" }}
+            className="text-[12px] font-bold uppercase tracking-[0.06em] transition-colors"
+            style={{
+              fontFamily: "var(--font-rig-mono)",
+              color: C.surface,
+              background: C.tertiary,
+              height: "40px",
+              padding: "0 20px",
+              border: "none",
+              cursor: "pointer",
+            }}
           >
             LAUNCH
-            <ArrowRight className="size-3.5" />
+            <ArrowRight className="inline ml-1.5 size-3.5" />
           </button>
         </div>
       </div>
@@ -192,14 +209,21 @@ function Navbar() {
 }
 
 /* ===================================================================
-   Hero — light with red wash, oversized headline
+   Hero — black with orange glow, oversized headline
    =================================================================== */
 
 function Hero() {
   const enterApp = useAppStore((s) => s.enterApp);
 
   return (
-    <section className="rig rig-wash relative overflow-hidden">
+    <section
+      className="rig rig-dark relative overflow-hidden"
+      style={{
+        background: C.surface,
+        backgroundImage:
+          "radial-gradient(ellipse 90% 70% at 50% 0%, rgba(237, 70, 45, 0.15), transparent 65%), radial-gradient(ellipse 50% 40% at 80% 30%, rgba(237, 70, 45, 0.06), transparent 60%)",
+      }}
+    >
       <div className="mx-auto max-w-7xl px-5 sm:px-8 pt-16 pb-24 sm:pt-24 sm:pb-32">
         {/* Overline */}
         <motion.div
@@ -230,7 +254,7 @@ function Hero() {
           style={{
             fontSize: "clamp(48px, 8vw, 96px)",
             lineHeight: "0.92",
-            color: C.primary,
+            color: C.onSurface,
           }}
         >
           SHIP CODE
@@ -249,7 +273,7 @@ function Hero() {
           className="mt-8 max-w-xl text-[18px] font-semibold leading-[1.5]"
           style={{
             fontFamily: "var(--font-rig-body)",
-            color: C.primary,
+            color: "rgba(240, 237, 230, 0.6)",
           }}
         >
           Forge accepts a task, plans the work, writes and edits code, runs
@@ -264,13 +288,40 @@ function Hero() {
           transition={{ duration: 0.5, delay: 0.25 }}
           className="mt-10 flex flex-wrap items-center gap-3"
         >
-          <button onClick={() => enterApp("new-task")} className="rig-btn">
+          <button
+            onClick={() => enterApp("new-task")}
+            className="text-[13px] font-bold uppercase tracking-[0.04em] transition-opacity hover:opacity-80"
+            style={{
+              fontFamily: "var(--font-rig-mono)",
+              color: C.surface,
+              background: C.tertiary,
+              height: "52px",
+              padding: "0 32px",
+              border: "none",
+              cursor: "pointer",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "8px",
+            }}
+          >
             START A TASK
             <ArrowRight className="size-4" />
           </button>
           <button
             onClick={() => enterApp("dashboard")}
-            className="rig-btn rig-btn-secondary"
+            className="text-[13px] font-bold uppercase tracking-[0.04em] transition-colors hover:bg-white/5"
+            style={{
+              fontFamily: "var(--font-rig-mono)",
+              color: C.onSurface,
+              background: "transparent",
+              height: "52px",
+              padding: "0 32px",
+              border: `1px solid ${C.borderSubtleDark}`,
+              cursor: "pointer",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "8px",
+            }}
           >
             VIEW DASHBOARD
           </button>
@@ -713,7 +764,7 @@ function Workflow() {
     <section
       id="workflow"
       className="rig py-24 sm:py-32"
-      style={{ background: C.secondary, color: C.primary }}
+      style={{ background: C.surface, color: C.onSurface }}
     >
       <div className="mx-auto max-w-7xl px-5 sm:px-8">
         {/* Header */}
@@ -738,7 +789,7 @@ function Workflow() {
               style={{
                 fontSize: "clamp(36px, 6vw, 64px)",
                 lineHeight: "0.98",
-                color: C.primary,
+                color: C.onSurface,
               }}
             >
               FROM PROMPT
@@ -747,7 +798,7 @@ function Workflow() {
             </h2>
             <p
               className="mt-6 max-w-lg text-[18px] font-semibold leading-[1.5]"
-              style={{ fontFamily: "var(--font-rig-body)", color: C.primary }}
+              style={{ fontFamily: "var(--font-rig-body)", color: C.onSurface }}
             >
               Four observable stages. No magic, no hidden state.
             </p>
@@ -763,7 +814,7 @@ function Workflow() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.35, delay: i * 0.05 }}
-              className="grid gap-6 py-10 transition-colors hover:bg-black/[0.02]"
+              className="grid gap-6 py-10 transition-colors hover:bg-white/[0.03]"
               style={{
                 borderBottom: `1px solid ${C.borderSubtle}`,
                 gridTemplateColumns: "80px 1fr 1.5fr auto",
@@ -779,7 +830,7 @@ function Workflow() {
                 className="text-[26px] font-bold tracking-tight"
                 style={{
                   fontFamily: "var(--font-rig-headline)",
-                  color: C.primary,
+                  color: C.onSurface,
                   letterSpacing: "-0.02em",
                 }}
               >
@@ -789,14 +840,14 @@ function Workflow() {
                 className="text-[16px] font-medium leading-[1.6]"
                 style={{
                   fontFamily: "var(--font-rig-body)",
-                  color: "rgba(10, 10, 10, 0.6)",
+                  color: "rgba(240, 237, 230, 0.6)",
                 }}
               >
                 {s.body}
               </p>
               <ArrowRight
                 className="size-5 opacity-30"
-                style={{ color: C.primary }}
+                style={{ color: C.onSurface }}
               />
             </motion.div>
           ))}
@@ -804,7 +855,22 @@ function Workflow() {
 
         {/* CTA */}
         <div className="mt-12">
-          <button onClick={() => enterApp("new-task")} className="rig-btn">
+          <button
+            onClick={() => enterApp("new-task")}
+            className="text-[13px] font-bold uppercase tracking-[0.04em] transition-opacity hover:opacity-80"
+            style={{
+              fontFamily: "var(--font-rig-mono)",
+              color: C.surface,
+              background: C.tertiary,
+              height: "52px",
+              padding: "0 32px",
+              border: "none",
+              cursor: "pointer",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "8px",
+            }}
+          >
             TRY IT NOW
             <ArrowRight className="size-4" />
           </button>
@@ -970,7 +1036,7 @@ function CodeShowcase() {
     <section
       id="code"
       className="rig py-24 sm:py-32"
-      style={{ background: C.secondary, color: C.primary }}
+      style={{ background: C.surface, color: C.onSurface }}
     >
       <div className="mx-auto max-w-7xl px-5 sm:px-8">
         {/* Header */}
@@ -995,7 +1061,7 @@ function CodeShowcase() {
               style={{
                 fontSize: "clamp(36px, 6vw, 64px)",
                 lineHeight: "0.98",
-                color: C.primary,
+                color: C.onSurface,
               }}
             >
               REAL COMMANDS.
@@ -1004,7 +1070,7 @@ function CodeShowcase() {
             </h2>
             <p
               className="mt-6 max-w-lg text-[18px] font-semibold leading-[1.5]"
-              style={{ fontFamily: "var(--font-rig-body)", color: C.primary }}
+              style={{ fontFamily: "var(--font-rig-body)", color: C.onSurface }}
             >
               The agent's planner is a typed function with a clean fallback —
               exactly the kind of code you'd want in production.
@@ -1072,11 +1138,11 @@ export async function planTask(
               <div
                 key={c.cmd}
                 className="p-5 transition-colors"
-                style={{ background: C.secondary }}
+                style={{ background: C.surface }}
               >
                 <div
                   className="text-[14px] font-bold mb-1"
-                  style={{ fontFamily: "var(--font-rig-mono)", color: C.primary }}
+                  style={{ fontFamily: "var(--font-rig-mono)", color: C.onSurface }}
                 >
                   <span style={{ color: C.tertiary }}>$</span> {c.cmd}
                 </div>
@@ -1084,7 +1150,7 @@ export async function planTask(
                   className="text-[12px] font-medium"
                   style={{
                     fontFamily: "var(--font-rig-body)",
-                    color: "rgba(10, 10, 10, 0.5)",
+                    color: "rgba(240, 237, 230, 0.5)",
                   }}
                 >
                   {c.desc}
@@ -1105,7 +1171,14 @@ export async function planTask(
 function FinalCTA() {
   const enterApp = useAppStore((s) => s.enterApp);
   return (
-    <section className="rig rig-wash relative overflow-hidden py-24 sm:py-32">
+    <section
+      className="rig rig-dark relative overflow-hidden py-24 sm:py-32"
+      style={{
+        background: C.surface,
+        backgroundImage:
+          "radial-gradient(ellipse 60% 50% at 50% 50%, rgba(237, 70, 45, 0.12), transparent 70%)",
+      }}
+    >
       <div className="mx-auto max-w-7xl px-5 sm:px-8 text-center">
         <span
           className="text-[11px] font-bold uppercase tracking-[0.08em] mb-8 inline-block"
@@ -1123,7 +1196,7 @@ function FinalCTA() {
           style={{
             fontSize: "clamp(40px, 7vw, 80px)",
             lineHeight: "0.95",
-            color: C.primary,
+            color: C.onSurface,
           }}
         >
           SHIP YOUR NEXT PR
@@ -1133,19 +1206,46 @@ function FinalCTA() {
         </h2>
         <p
           className="mx-auto mt-8 max-w-xl text-[18px] font-semibold leading-[1.5]"
-          style={{ fontFamily: "var(--font-rig-body)", color: C.primary }}
+          style={{ fontFamily: "var(--font-rig-body)", color: "rgba(240, 237, 230, 0.6)" }}
         >
           Launch the app, describe a task, and watch Forge plan, code, test,
           and open a pull request — all in real time.
         </p>
         <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
-          <button onClick={() => enterApp("new-task")} className="rig-btn">
+          <button
+            onClick={() => enterApp("new-task")}
+            className="text-[13px] font-bold uppercase tracking-[0.04em] transition-opacity hover:opacity-80"
+            style={{
+              fontFamily: "var(--font-rig-mono)",
+              color: C.surface,
+              background: C.tertiary,
+              height: "52px",
+              padding: "0 32px",
+              border: "none",
+              cursor: "pointer",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "8px",
+            }}
+          >
             START A TASK
             <ArrowRight className="size-4" />
           </button>
           <button
             onClick={() => enterApp("dashboard")}
-            className="rig-btn rig-btn-secondary"
+            className="text-[13px] font-bold uppercase tracking-[0.04em] transition-colors hover:bg-white/5"
+            style={{
+              fontFamily: "var(--font-rig-mono)",
+              color: C.onSurface,
+              background: "transparent",
+              height: "52px",
+              padding: "0 32px",
+              border: `1px solid ${C.borderSubtleDark}`,
+              cursor: "pointer",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "8px",
+            }}
           >
             VIEW DASHBOARD
           </button>
@@ -1333,7 +1433,7 @@ function Footer() {
 
 export function LandingPage() {
   return (
-    <div className="rig min-h-screen" style={{ background: C.secondary }}>
+    <div className="rig min-h-screen" style={{ background: C.surface }}>
       <StatusBar />
       <Navbar />
       <main>

@@ -73,7 +73,7 @@ function StatCard({
               )}
             </div>
             <div
-              className={`flex size-9 items-center justify-center rounded-lg ${accent}`}
+              className={`flex size-9 items-center justify-center rounded-md ${accent}`}
             >
               <Icon className="size-4" />
             </div>
@@ -156,7 +156,7 @@ export function DashboardView() {
           label="Total tasks"
           value={tasks.length}
           sub={`${active.length} active`}
-          accent="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
+          accent="bg-primary/10 text-primary dark:text-primary"
           delay={0}
         />
         <StatCard
@@ -164,7 +164,7 @@ export function DashboardView() {
           label="Completed"
           value={completed.length}
           sub={`${successRate}% success rate`}
-          accent="bg-sky-500/10 text-sky-600 dark:text-sky-400"
+          accent="bg-muted-foreground/10 text-muted-foreground dark:text-muted-foreground"
           delay={0.05}
         />
         <StatCard
@@ -172,7 +172,7 @@ export function DashboardView() {
           label="Pull requests"
           value={totalPRs}
           sub={`across ${new Set(completed.map((t) => t.repository)).size} repos`}
-          accent="bg-amber-500/10 text-amber-600 dark:text-amber-400"
+          accent="bg-primary/10 text-primary dark:text-primary"
           delay={0.1}
         />
         <StatCard
@@ -180,7 +180,7 @@ export function DashboardView() {
           label="Steps executed"
           value={tasks.reduce((a, t) => a + t.completedSteps, 0)}
           sub="across all tasks"
-          accent="bg-purple-500/10 text-purple-600 dark:text-purple-400"
+          accent="bg-primary/10 text-primary dark:text-primary"
           delay={0.15}
         />
       </div>
@@ -279,9 +279,9 @@ export function DashboardView() {
                     );
                   }, 100);
                 }}
-                className="group flex w-full items-start gap-3 rounded-lg border border-border/60 bg-card/40 p-3 text-left transition-colors hover:border-emerald-500/30 hover:bg-card"
+                className="group flex w-full items-start gap-3 rounded-md border border-border/60 bg-card/40 p-3 text-left transition-colors hover:border-primary/40 hover:bg-card"
               >
-                <div className="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-md bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+                <div className="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary dark:text-primary">
                   <Zap className="size-3.5" />
                 </div>
                 <div className="flex-1">
@@ -352,9 +352,9 @@ function TaskRow({ task, onClick }: { task: Task; onClick: () => void }) {
     >
       <div className="flex size-8 shrink-0 items-center justify-center rounded-md bg-muted/40 text-muted-foreground">
         {task.status === "completed" ? (
-          <CheckCircle2 className="size-4 text-emerald-500" />
+          <CheckCircle2 className="size-4 text-primary" />
         ) : task.status === "failed" ? (
-          <Activity className="size-4 text-red-500" />
+          <Activity className="size-4 text-muted-foreground" />
         ) : (
           <Bot className="size-4" />
         )}

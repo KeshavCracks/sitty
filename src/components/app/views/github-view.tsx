@@ -120,7 +120,7 @@ export function GitHubView() {
                   </span>
                   <Badge
                     variant="outline"
-                    className="border-emerald-500/30 bg-emerald-500/10 text-[10px] text-emerald-600 dark:text-emerald-400"
+                    className="border-primary/40 bg-primary/10 text-[10px] text-primary dark:text-primary"
                   >
                     <CheckCircle2 className="mr-1 size-2.5" />
                     Connected
@@ -195,7 +195,7 @@ function NotConnectedState({ error }: { error: string | null }) {
             <code className="rounded bg-muted px-1 py-0.5 font-mono text-[10px]">repo</code> scope to enable GitHub integration.
           </p>
           {error && (
-            <div className="mt-2 flex items-start gap-1.5 rounded-md border border-amber-500/30 bg-amber-500/5 p-2 text-xs text-amber-700 dark:text-amber-400">
+            <div className="mt-2 flex items-start gap-1.5 rounded-md border border-primary/40 bg-primary/5 p-2 text-xs text-primary dark:text-primary">
               <AlertCircle className="mt-0.5 size-3.5 shrink-0" />
               <span>{error}</span>
             </div>
@@ -205,14 +205,14 @@ function NotConnectedState({ error }: { error: string | null }) {
 
       <ol className="space-y-2 rounded-md border border-border/60 bg-muted/20 p-3 text-xs text-muted-foreground">
         <li className="flex gap-2">
-          <span className="font-mono font-bold text-emerald-500">1.</span>
+          <span className="font-mono font-bold text-primary">1.</span>
           <span>
             Visit{" "}
             <a
               href="https://github.com/settings/tokens/new?scopes=repo&description=Forge%20AI%20Software%20Engineer"
               target="_blank"
               rel="noreferrer"
-              className="inline-flex items-center gap-0.5 font-medium text-emerald-600 dark:text-emerald-400 hover:underline"
+              className="inline-flex items-center gap-0.5 font-medium text-primary dark:text-primary hover:underline"
             >
               github.com/settings/tokens
               <ExternalLink className="size-3" />
@@ -221,13 +221,13 @@ function NotConnectedState({ error }: { error: string | null }) {
           </span>
         </li>
         <li className="flex gap-2">
-          <span className="font-mono font-bold text-emerald-500">2.</span>
+          <span className="font-mono font-bold text-primary">2.</span>
           <span>
             Add it to your environment as <code className="rounded bg-muted px-1 font-mono">GITHUB_TOKEN</code> (locally in <code className="rounded bg-muted px-1 font-mono">.env.local</code>, on Vercel in Project Settings → Environment Variables).
           </span>
         </li>
         <li className="flex gap-2">
-          <span className="font-mono font-bold text-emerald-500">3.</span>
+          <span className="font-mono font-bold text-primary">3.</span>
           <span>Redeploy or restart the dev server, then click Refresh.</span>
         </li>
       </ol>
@@ -253,7 +253,7 @@ function RepoRow({ repo }: { repo: GitHubRepository }) {
         <div className="mt-0.5 flex items-center gap-3 text-xs text-muted-foreground">
           {repo.language && (
             <span className="flex items-center gap-1">
-              <span className="size-2 rounded-full bg-emerald-500" />
+              <span className="size-2 rounded-full bg-primary" />
               {repo.language}
             </span>
           )}

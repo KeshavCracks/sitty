@@ -42,9 +42,9 @@ const NAV_ITEMS: NavItem[] = [
 ];
 
 const RUNTIME_BADGE_STYLES: Record<string, string> = {
-  demo: "border-amber-500/30 bg-amber-500/10 text-amber-600 dark:text-amber-400",
-  cloud: "border-sky-500/30 bg-sky-500/10 text-sky-600 dark:text-sky-400",
-  local: "border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
+  demo: "border-primary/40 bg-primary/10 text-primary dark:text-primary",
+  cloud: "border-muted-foreground/30 bg-muted-foreground/10 text-muted-foreground dark:text-muted-foreground",
+  local: "border-primary/40 bg-primary/10 text-primary dark:text-primary",
 };
 
 export function SidebarContent() {
@@ -107,7 +107,7 @@ export function SidebarContent() {
               <item.icon className="size-4" />
               <span className="flex-1 text-left">{item.label}</span>
               {item.view === "execution" && isRunning && (
-                <span className="size-1.5 rounded-full bg-emerald-500 pulse-ring" />
+                <span className="size-1.5 rounded-full bg-primary pulse-ring" />
               )}
               {item.view === "execution" && !isRunning && currentTaskId && (
                 <span className="size-1.5 rounded-full bg-muted-foreground/50" />
@@ -118,7 +118,7 @@ export function SidebarContent() {
       </nav>
 
       {/* Runtime status card */}
-      <div className="m-3 rounded-lg border border-sidebar-border bg-sidebar-accent/30 p-3">
+      <div className="m-3 rounded-md border border-sidebar-border bg-sidebar-accent/30 p-3">
         <div className="flex items-center justify-between">
           <span className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
             Runtime
@@ -142,7 +142,7 @@ export function SidebarContent() {
             className={cn(
               "font-medium",
               githubConnected
-                ? "text-emerald-600 dark:text-emerald-400"
+                ? "text-primary dark:text-primary"
                 : "text-muted-foreground"
             )}
           >
@@ -151,7 +151,7 @@ export function SidebarContent() {
         </div>
         {isRunning && (
           <div className="mt-2 flex items-center gap-1.5 border-t border-sidebar-border pt-2 text-xs">
-            <Bot className="size-3 shrink-0 text-emerald-500" />
+            <Bot className="size-3 shrink-0 text-primary" />
             <span className="truncate text-muted-foreground">{statusLine}</span>
           </div>
         )}

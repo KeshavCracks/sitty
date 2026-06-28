@@ -178,7 +178,7 @@ export function SettingsView() {
 
           <div className="flex items-center justify-between">
             <div className="flex items-start gap-3">
-              <div className="flex size-8 items-center justify-center rounded-md bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+              <div className="flex size-8 items-center justify-center rounded-md bg-primary/10 text-primary dark:text-primary">
                 <Wand2 className="size-4" />
               </div>
               <div>
@@ -215,9 +215,9 @@ export function SettingsView() {
                 toast.info(`Runtime set to ${opt.label}`);
               }}
               className={cn(
-                "flex w-full items-start gap-3 rounded-lg border p-3 text-left transition-colors",
+                "flex w-full items-start gap-3 rounded-md border p-3 text-left transition-colors",
                 runtimeMode === opt.value
-                  ? "border-emerald-500/40 bg-emerald-500/5"
+                  ? "border-primary/40 bg-primary/5"
                   : "border-border/60 hover:bg-muted/30"
               )}
             >
@@ -225,7 +225,7 @@ export function SettingsView() {
                 className={cn(
                   "flex size-8 shrink-0 items-center justify-center rounded-md",
                   runtimeMode === opt.value
-                    ? "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400"
+                    ? "bg-primary/15 text-primary dark:text-primary"
                     : "bg-muted/40 text-muted-foreground"
                 )}
               >
@@ -235,7 +235,7 @@ export function SettingsView() {
                 <div className="flex items-center gap-2">
                   <span className="text-sm font-medium">{opt.label}</span>
                   {runtimeMode === opt.value && (
-                    <CheckCircle2 className="size-3.5 text-emerald-500" />
+                    <CheckCircle2 className="size-3.5 text-primary" />
                   )}
                   {serverInfo?.runtime === opt.value && (
                     <Badge
@@ -386,9 +386,9 @@ function ProviderOption({
       onClick={onSelect}
       disabled={!available}
       className={cn(
-        "flex flex-col items-start gap-1 rounded-lg border p-3 text-left transition-colors",
+        "flex flex-col items-start gap-1 rounded-md border p-3 text-left transition-colors",
         active
-          ? "border-emerald-500/40 bg-emerald-500/5"
+          ? "border-primary/40 bg-primary/5"
           : "border-border/60 hover:bg-muted/30",
         !available && "cursor-not-allowed opacity-50"
       )}
@@ -398,7 +398,7 @@ function ProviderOption({
         {available ? (
           <Badge
             variant="outline"
-            className="h-4 border-emerald-500/30 bg-emerald-500/10 px-1 text-[9px] text-emerald-600 dark:text-emerald-400"
+            className="h-4 border-primary/40 bg-primary/10 px-1 text-[9px] text-primary dark:text-primary"
           >
             ready
           </Badge>
@@ -438,7 +438,7 @@ function IntegrationRow({
       {status === "configured" ? (
         <Badge
           variant="outline"
-          className="border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
+          className="border-primary/40 bg-primary/10 text-primary dark:text-primary"
         >
           <CheckCircle2 className="mr-1 size-3" />
           Configured
