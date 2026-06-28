@@ -332,3 +332,147 @@
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
+
+/* ============================================================
+   rig.ai Design System — stark, high-contrast, editorial
+   Scoped to .rig so it doesn't affect the app shell
+   ============================================================ */
+
+.rig {
+  --rig-primary: #000000;
+  --rig-secondary: #F0EDE6;
+  --rig-tertiary: #ED462D;
+  --rig-neutral: #FFFFFF;
+  --rig-surface: #0A0A0A;
+  --rig-on-surface: #F0EDE6;
+  --rig-muted: rgba(10, 10, 10, 0.3);
+  --rig-border-subtle: rgba(10, 10, 10, 0.2);
+
+  --rig-font-headline: var(--font-rig-headline), 'Helvetica Neue', Arial, sans-serif;
+  --rig-font-body: var(--font-rig-body), 'Helvetica Neue', Arial, sans-serif;
+  --rig-font-mono: var(--font-rig-mono), ui-monospace, monospace;
+
+  font-family: var(--rig-font-body);
+  color: var(--rig-primary);
+  background-color: var(--rig-secondary);
+}
+
+/* Headlines: Archivo (Chalet substitute), bold, tight tracking */
+.rig-headline {
+  font-family: var(--rig-font-headline);
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  line-height: 0.95;
+}
+
+/* Mono labels: Chivo Mono, uppercase, tracked */
+.rig-mono {
+  font-family: var(--rig-font-mono);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* Body: Instrument Sans */
+.rig-body {
+  font-family: var(--rig-font-body);
+}
+
+/* Buttons: sharp corners, transparent → black fill on hover */
+.rig-btn {
+  font-family: var(--rig-font-mono);
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  height: 52px;
+  padding: 0 32px;
+  border-radius: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: transparent;
+  color: var(--rig-primary);
+  border: 1px solid var(--rig-primary);
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+.rig-btn:hover {
+  background: var(--rig-primary);
+  color: var(--rig-neutral);
+}
+.rig-btn-secondary {
+  border-color: var(--rig-border-subtle);
+}
+.rig-btn-secondary:hover {
+  background: var(--rig-primary);
+  color: var(--rig-neutral);
+  border-color: var(--rig-primary);
+}
+/* On dark surfaces, invert */
+.rig-dark .rig-btn {
+  color: var(--rig-on-surface);
+  border-color: var(--rig-on-surface);
+}
+.rig-dark .rig-btn:hover {
+  background: var(--rig-on-surface);
+  color: var(--rig-surface);
+}
+.rig-btn-accent {
+  color: var(--rig-tertiary);
+  border-color: var(--rig-tertiary);
+}
+.rig-btn-accent:hover {
+  background: var(--rig-tertiary);
+  color: var(--rig-neutral);
+}
+
+/* Chip: mono, uppercase, transparent, accent text */
+.rig-chip {
+  font-family: var(--rig-font-mono);
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--rig-tertiary);
+  padding: 6px 10px;
+  border: 1px solid var(--rig-tertiary);
+  border-radius: 0;
+  display: inline-block;
+}
+
+/* Card: dark surface, red border, off-white text */
+.rig-card {
+  background: var(--rig-surface);
+  color: var(--rig-on-surface);
+  border: 1px solid var(--rig-tertiary);
+  border-radius: 6px;
+  padding: 28px 32px;
+}
+
+/* Red wash background for hero */
+.rig-wash {
+  background-color: var(--rig-secondary);
+  background-image:
+    radial-gradient(ellipse 90% 70% at 50% 0%, rgba(237, 70, 45, 0.18), transparent 65%),
+    radial-gradient(ellipse 50% 40% at 80% 30%, rgba(237, 70, 45, 0.08), transparent 60%);
+}
+
+/* Marquee scroll animation */
+@keyframes rig-marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.rig-marquee {
+  animation: rig-marquee 30s linear infinite;
+}
+
+/* Fade up entrance */
+@keyframes rig-fade-up {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.rig-fade-up {
+  animation: rig-fade-up 0.6s ease-out forwards;
+}
