@@ -3,574 +3,353 @@
 /**
  * Forge — Landing Page
  *
- * Editorial, Mainframe-inspired design language:
- *   - Full-screen background video scrubbed by horizontal mouse movement
- *   - Helvetica Now Display typography (heading + body)
- *   - Blurred intro label → typewriter hero → action pill buttons
- *   - Monochrome, generous whitespace, large editorial type
+ * Clean, light, SaaS-style design inspired by render.com:
+ *   - White backgrounds, violet/purple primary accent
+ *   - Centered hero with headline + subtext + CTAs + code block
+ *   - Social proof strip, feature card grid, workflow section
+ *   - Code/terminal showcase, final CTA, multi-column footer
  *
- * All substantive sections retained and restyled:
- *   Hero → Manifesto → Features → Architecture → Workflow →
- *   Terminal & Code → Final CTA → Footer
+ * Uses explicit light colors (bg-white, text-slate-900, violet-600)
+ * so the landing renders light regardless of the dark class on <html>.
+ * The app shell remains dark — standard SaaS pattern (light marketing,
+ * dark app).
  */
 
 import * as React from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
+import {
+  ArrowRight,
+  Bot,
+  Check,
+  CheckCircle2,
+  ChevronRight,
+  Code2,
+  Cpu,
+  FileCode2,
+  GitBranch,
+  Github,
+  GitPullRequest,
+  Layers,
+  Shield,
+  ShieldCheck,
+  Sparkles,
+  Terminal,
+  Workflow,
+  Zap,
+} from "lucide-react";
 import { useAppStore } from "@/store/app-store";
 
-const VIDEO_URL =
-  "https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260530_042513_df96a13b-6155-4f6e-8b93-c9dee66fba08.mp4";
-const SENSITIVITY = 0.8;
-
-/* ═══════════════════════════════════════════════════════════════
-   Hooks
-   ═══════════════════════════════════════════════════════════════ */
-
-function useTypewriter(text: string, speed = 38, startDelay = 600) {
-  const [displayed, setDisplayed] = React.useState("");
-  const [done, setDone] = React.useState(false);
-
-  React.useEffect(() => {
-    let timeoutId: ReturnType<typeof setTimeout>;
-    let intervalId: ReturnType<typeof setInterval>;
-    let index = 0;
-
-    timeoutId = setTimeout(() => {
-      intervalId = setInterval(() => {
-        index++;
-        setDisplayed(text.slice(0, index));
-        if (index >= text.length) {
-          clearInterval(intervalId);
-          setDone(true);
-        }
-      }, speed);
-    }, startDelay);
-
-    return () => {
-      clearTimeout(timeoutId);
-      clearInterval(intervalId);
-    };
-  }, [text, speed, startDelay]);
-
-  return { displayed, done };
-}
-
-function useVideoScrub(videoRef: React.RefObject<HTMLVideoElement | null>) {
-  React.useEffect(() => {
-    const video = videoRef.current;
-    if (!video) return;
-
-    let prevX = 0;
-    let targetTime = 0;
-    let seeking = false;
-    let initialised = false;
-
-    const onMouseMove = (e: MouseEvent) => {
-      if (!initialised) {
-        prevX = e.clientX;
-        initialised = true;
-        return;
-      }
-      const delta = e.clientX - prevX;
-      prevX = e.clientX;
-      if (!video.duration || isNaN(video.duration)) return;
-      targetTime =
-        video.currentTime +
-        (delta / window.innerWidth) * SENSITIVITY * video.duration;
-      targetTime = Math.max(0, Math.min(video.duration, targetTime));
-      if (!seeking) {
-        seeking = true;
-        video.currentTime = targetTime;
-      }
-    };
-
-    const onSeeked = () => {
-      seeking = false;
-      if (Math.abs(video.currentTime - targetTime) > 0.05) {
-        seeking = true;
-        video.currentTime = targetTime;
-      }
-    };
-
-    window.addEventListener("mousemove", onMouseMove);
-    video.addEventListener("seeked", onSeeked);
-
-    return () => {
-      window.removeEventListener("mousemove", onMouseMove);
-      video.removeEventListener("seeked", onSeeked);
-    };
-  }, [videoRef]);
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   Icons
-   ═══════════════════════════════════════════════════════════════ */
-
-function CopyIcon({ className }: { className?: string }) {
-  return (
-    <svg
-      width="12"
-      height="12"
-      viewBox="0 0 12 12"
-      fill="none"
-      className={className}
-      aria-hidden="true"
-    >
-      <rect
-        x="3.5"
-        y="3.5"
-        width="6.5"
-        height="6.5"
-        rx="1"
-        stroke="currentColor"
-        strokeWidth="1.1"
-        fill="none"
-      />
-      <path
-        d="M2 8V2.5C2 2.22386 2.22386 2 2.5 2H8"
-        stroke="currentColor"
-        strokeWidth="1.1"
-        fill="none"
-        strokeLinecap="round"
-      />
-    </svg>
-  );
-}
-
-function ArrowDownIcon({ className }: { className?: string }) {
-  return (
-    <svg
-      width="14"
-      height="14"
-      viewBox="0 0 14 14"
-      fill="none"
-      className={className}
-      aria-hidden="true"
-    >
-      <path
-        d="M7 2V12M7 12L12 7M7 12L2 7"
-        stroke="currentColor"
-        strokeWidth="1.2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
-
-/* ═══════════════════════════════════════════════════════════════
+/* ===================================================================
    Navbar
-   ═══════════════════════════════════════════════════════════════ */
+   =================================================================== */
 
 function Navbar() {
   const enterApp = useAppStore((s) => s.enterApp);
-  const [menuOpen, setMenuOpen] = React.useState(false);
+  const [scrolled, setScrolled] = React.useState(false);
 
-  const navLinks = (
-    <>
-      <a href="#features" className="hover:opacity-60 transition-opacity">
-        Features
-      </a>
-      <span className="opacity-30">,</span>
-      <a href="#architecture" className="hover:opacity-60 transition-opacity">
-        Architecture
-      </a>
-      <span className="opacity-30">,</span>
-      <a href="#workflow" className="hover:opacity-60 transition-opacity">
-        Workflow
-      </a>
-      <span className="opacity-30">,</span>
-      <a
-        href="https://github.com/KeshavCracks/sitty"
-        target="_blank"
-        rel="noreferrer"
-        className="hover:opacity-60 transition-opacity"
-      >
-        GitHub
-      </a>
-    </>
-  );
+  React.useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 8);
+    window.addEventListener("scroll", onScroll);
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   return (
-    <>
-      <nav className="fixed top-0 left-0 right-0 z-10 px-5 sm:px-8 py-4 sm:py-5 flex justify-between items-center">
-        {/* Logo */}
-        <button
-          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-          className="flex items-center gap-3"
-        >
-          <span
-            className="text-[#e8e6e1] text-[21px] sm:text-[26px] tracking-tight"
-            style={{ fontFamily: "var(--font-heading)" }}
+    <header
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-200 ${
+        scrolled
+          ? "bg-white/90 backdrop-blur-md border-b border-slate-200/80 shadow-sm"
+          : "bg-transparent"
+      }`}
+    >
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="flex h-16 items-center justify-between">
+          {/* Logo */}
+          <button
+            onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+            className="flex items-center gap-2"
           >
-            Forge&reg;
-          </span>
-          <span
-            className="text-[#e8e6e1] text-[25px] sm:text-[30px] select-none"
-            style={{ letterSpacing: "-0.02em" }}
-          >
-            ✳
-          </span>
-        </button>
+            <div className="flex size-8 items-center justify-center rounded-lg bg-gradient-to-br from-violet-600 to-purple-600">
+              <Bot className="size-5 text-white" />
+            </div>
+            <span className="text-lg font-semibold text-slate-900 tracking-tight">
+              Forge
+            </span>
+          </button>
 
-        {/* Desktop nav */}
-        <div className="hidden md:flex items-center gap-2 text-[23px] text-[#e8e6e1]">
-          {navLinks}
+          {/* Center nav */}
+          <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-slate-600">
+            <a href="#features" className="hover:text-slate-900 transition-colors">
+              Features
+            </a>
+            <a href="#how-it-works" className="hover:text-slate-900 transition-colors">
+              How it works
+            </a>
+            <a href="#architecture" className="hover:text-slate-900 transition-colors">
+              Architecture
+            </a>
+            <a
+              href="https://github.com/KeshavCracks/sitty"
+              target="_blank"
+              rel="noreferrer"
+              className="hover:text-slate-900 transition-colors"
+            >
+              GitHub
+            </a>
+          </nav>
+
+          {/* Right CTAs */}
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => enterApp("dashboard")}
+              className="hidden sm:inline-flex text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors"
+            >
+              Sign in
+            </button>
+            <button
+              onClick={() => enterApp("new-task")}
+              className="inline-flex items-center gap-1.5 rounded-lg bg-violet-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-violet-700 transition-colors"
+            >
+              Get started
+              <ArrowRight className="size-3.5" />
+            </button>
+          </div>
         </div>
-
-        {/* Desktop CTA */}
-        <button
-          onClick={() => enterApp("dashboard")}
-          className="hidden md:block text-[#e8e6e1] text-[23px] underline underline-offset-2 hover:opacity-60 transition-opacity"
-        >
-          Launch App
-        </button>
-
-        {/* Mobile hamburger */}
-        <button
-          className="md:hidden flex flex-col justify-center gap-[5px] z-20"
-          onClick={() => setMenuOpen(!menuOpen)}
-          aria-label="Toggle menu"
-        >
-          <span
-            className="w-6 h-[2px] bg-[#e8e6e1] transition-all duration-300"
-            style={{
-              transform: menuOpen
-                ? "rotate(45deg) translateY(7px)"
-                : "rotate(0deg) translateY(0)",
-            }}
-          />
-          <span
-            className="w-6 h-[2px] bg-[#e8e6e1] transition-all duration-300"
-            style={{ opacity: menuOpen ? 0 : 1 }}
-          />
-          <span
-            className="w-6 h-[2px] bg-[#e8e6e1] transition-all duration-300"
-            style={{
-              transform: menuOpen
-                ? "rotate(-45deg) translateY(-7px)"
-                : "rotate(0deg) translateY(0)",
-            }}
-          />
-        </button>
-      </nav>
-
-      {/* Mobile overlay */}
-      <div
-        className="fixed inset-0 z-[9] bg-background/95 backdrop-blur-sm flex flex-col justify-center px-8 gap-8 md:hidden transition-opacity duration-300"
-        style={{
-          opacity: menuOpen ? 1 : 0,
-          pointerEvents: menuOpen ? "auto" : "none",
-        }}
-      >
-        <a
-          href="#features"
-          onClick={() => setMenuOpen(false)}
-          className="text-[32px] font-medium text-foreground"
-        >
-          Features
-        </a>
-        <a
-          href="#architecture"
-          onClick={() => setMenuOpen(false)}
-          className="text-[32px] font-medium text-foreground"
-        >
-          Architecture
-        </a>
-        <a
-          href="#workflow"
-          onClick={() => setMenuOpen(false)}
-          className="text-[32px] font-medium text-foreground"
-        >
-          Workflow
-        </a>
-        <a
-          href="https://github.com/KeshavCracks/sitty"
-          target="_blank"
-          rel="noreferrer"
-          onClick={() => setMenuOpen(false)}
-          className="text-[32px] font-medium text-foreground"
-        >
-          GitHub
-        </a>
-        <button
-          onClick={() => {
-            setMenuOpen(false);
-            enterApp("dashboard");
-          }}
-          className="text-[32px] font-medium text-foreground underline underline-offset-2 text-left"
-        >
-          Launch App
-        </button>
       </div>
-    </>
+    </header>
   );
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   Hero — video scrub + typewriter + pills
-   ═══════════════════════════════════════════════════════════════ */
+/* ===================================================================
+   Hero
+   =================================================================== */
 
 function Hero() {
   const enterApp = useAppStore((s) => s.enterApp);
-  const videoRef = React.useRef<HTMLVideoElement>(null);
-  useVideoScrub(videoRef);
-
-  const typewriterText =
-    "Glad you stopped in. Describe a task, watch it plan, code, test, and ship. Now, what are we building?";
-  const { displayed, done } = useTypewriter(typewriterText);
-
-  const [pillsVisible, setPillsVisible] = React.useState(false);
-  const [copied, setCopied] = React.useState(false);
-
-  React.useEffect(() => {
-    const t = setTimeout(() => setPillsVisible(true), 400);
-    return () => clearTimeout(t);
-  }, []);
-
-  const copyEmail = () => {
-    navigator.clipboard.writeText("hello@forge.dev").catch(() => {});
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
-
-  const pillBase =
-    "inline-flex items-center justify-center rounded-full text-[13px] sm:text-[15px] px-4 sm:px-5 py-[0.3em] mx-[0.2em] mb-[0.4em] whitespace-nowrap transition-colors duration-200 cursor-pointer";
 
   return (
-    <section className="relative h-screen flex flex-col justify-end md:justify-center pb-12 md:pb-0 px-5 sm:px-8 md:px-10 overflow-hidden">
-      {/* Background video */}
-      <video
-        ref={videoRef}
-        src={VIDEO_URL}
-        muted
-        playsInline
-        preload="auto"
-        className="fixed inset-0 z-0 w-full h-full object-cover"
-        style={{ objectPosition: "70% center" }}
-      />
-
-      {/* Dark overlay for text readability */}
+    <section className="relative overflow-hidden bg-white pt-32 pb-20 sm:pt-40 sm:pb-28">
+      {/* Subtle background gradient */}
       <div
-        className="fixed inset-0 z-[1] pointer-events-none"
+        className="absolute inset-0 -z-10"
         style={{
           background:
-            "linear-gradient(to top, rgba(10,10,12,0.85) 0%, rgba(10,10,12,0.45) 50%, rgba(10,10,12,0.35) 100%)",
+            "radial-gradient(ellipse 80% 50% at 50% -10%, rgba(139, 92, 246, 0.12), transparent 70%)",
+        }}
+      />
+      {/* Grid pattern */}
+      <div
+        className="absolute inset-0 -z-10 opacity-[0.4]"
+        style={{
+          backgroundImage:
+            "linear-gradient(to right, rgb(241 245 249) 1px, transparent 1px), linear-gradient(to bottom, rgb(241 245 249) 1px, transparent 1px)",
+          backgroundSize: "48px 48px",
+          maskImage:
+            "radial-gradient(ellipse 60% 50% at 50% 30%, black, transparent 80%)",
+          WebkitMaskImage:
+            "radial-gradient(ellipse 60% 50% at 50% 30%, black, transparent 80%)",
         }}
       />
 
-      {/* Content */}
-      <div className="relative z-10 max-w-xl">
-        {/* Blurred intro */}
-        <div
-          className="pointer-events-none select-none mb-5 sm:mb-6"
-          style={{
-            fontSize: "clamp(18px, 4vw, 26px)",
-            lineHeight: 1.3,
-            fontWeight: 400,
-            color: "#e8e6e1",
-            filter: "blur(4px)",
-          }}
-        >
-          Hey there, meet Forge,
-          <br />
-          your autonomous software engineering agent
-        </div>
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-3xl text-center">
+          {/* Badge */}
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+            className="mb-6 inline-flex items-center gap-2 rounded-full border border-violet-200 bg-violet-50 px-3 py-1 text-xs font-medium text-violet-700"
+          >
+            <Sparkles className="size-3" />
+            Inspired by OpenHands &amp; Devin
+          </motion.div>
 
-        {/* Typewriter */}
-        <p
-          className="mb-5 sm:mb-6"
-          style={{
-            fontSize: "clamp(18px, 4vw, 26px)",
-            lineHeight: 1.35,
-            fontWeight: 400,
-            color: "#e8e6e1",
-            minHeight: "54px",
-          }}
-        >
-          {displayed}
-          {!done && (
-            <span className="animate-blink inline-block w-[2px] h-[1.1em] bg-[#e8e6e1] align-middle ml-[2px]" />
-          )}
-        </p>
-
-        {/* Action pills */}
-        <div
-          className="flex flex-wrap gap-y-1"
-          style={{
-            opacity: pillsVisible ? 1 : 0,
-            transform: pillsVisible ? "translateY(0)" : "translateY(8px)",
-            transition:
-              "opacity 0.4s ease, transform 0.4s ease",
-          }}
-        >
-          <button
-            className={`${pillBase} bg-[#e8e6e1] text-black border border-white/10 hover:bg-black hover:text-[#e8e6e1]`}
-            onClick={() => enterApp("new-task")}
+          {/* Headline */}
+          <motion.h1
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.05 }}
+            className="text-balance text-4xl font-bold tracking-tight text-slate-900 sm:text-5xl lg:text-6xl"
           >
-            Pitch us a task
-          </button>
-          <button
-            className={`${pillBase} bg-[#e8e6e1] text-black border border-white/10 hover:bg-black hover:text-[#e8e6e1]`}
-            onClick={() => enterApp("dashboard")}
-          >
-            See the dashboard
-          </button>
-          <a
-            href="#features"
-            className={`${pillBase} bg-[#e8e6e1] text-black border border-white/10 hover:bg-black hover:text-[#e8e6e1] no-underline`}
-          >
-            Read the brief
-          </a>
-          <a
-            href="#workflow"
-            className={`${pillBase} bg-[#e8e6e1] text-black border border-white/10 hover:bg-black hover:text-[#e8e6e1] no-underline`}
-          >
-            See how we operate
-          </a>
-          <button
-            className={`${pillBase} text-[#e8e6e1] bg-transparent border border-[#e8e6e1] hover:bg-[#e8e6e1] hover:text-black gap-2 sm:gap-3`}
-            onClick={copyEmail}
-          >
-            Reach us:{" "}
-            <span className="underline underline-offset-1">
-              {copied ? "copied!" : "hello@forge.dev"}
+            Deploy code with an{" "}
+            <span className="bg-gradient-to-r from-violet-600 to-purple-600 bg-clip-text text-transparent">
+              autonomous AI engineer
             </span>
-            <CopyIcon />
-          </button>
-        </div>
-      </div>
+          </motion.h1>
 
-      {/* Scroll indicator */}
-      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 hidden md:flex flex-col items-center gap-2 text-[#e8e6e1]/40">
-        <span className="text-[11px] uppercase tracking-[0.2em]">Scroll</span>
-        <ArrowDownIcon className="animate-bounce" />
-      </div>
-    </section>
-  );
-}
+          {/* Subtext */}
+          <motion.p
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="mx-auto mt-6 max-w-2xl text-pretty text-lg text-slate-600 sm:text-xl"
+          >
+            Forge accepts a task, breaks it into a plan, writes and edits
+            code, runs your tests, and opens a pull request — all observable
+            in real time. Claude-powered. GitHub-native. Deployable on Vercel.
+          </motion.p>
 
-/* ═══════════════════════════════════════════════════════════════
-   Manifesto — large editorial intro
-   ═══════════════════════════════════════════════════════════════ */
-
-function Manifesto() {
-  return (
-    <section className="relative py-32 md:py-48 px-5 sm:px-8 md:px-10 border-t border-white/10">
-      <div className="max-w-5xl">
-        <p className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground mb-8">
-          (01) — What is this
-        </p>
-        <h2
-          className="text-[clamp(32px,6vw,68px)] leading-[1.08] tracking-tight text-foreground"
-          style={{ fontFamily: "var(--font-heading)" }}
-        >
-          An autonomous software
-          <br />
-          engineering agent that{" "}
-          <span className="text-muted-foreground">plans,</span>{" "}
-          <span className="text-muted-foreground">codes,</span>{" "}
-          <span className="text-muted-foreground">tests,</span> and{" "}
-          <span className="text-muted-foreground">ships</span> — all
-          observable in real time.
-        </h2>
-        <div className="mt-12 max-w-2xl space-y-4 text-[17px] leading-relaxed text-muted-foreground">
-          <p>
-            Most AI coding demos either run in a notebook with hardcoded
-            prompts, or they need a Kubernetes cluster before they'll say
-            hello. Forge is the middle path: a production-quality Next.js
-            app that demonstrates the full Devin-style workflow — task
-            intake, planning, step-by-step execution with live terminal
-            output, file diffs, and a pull request.
-          </p>
-          <p>
-            It's honest about what can and cannot run on Vercel's free
-            tier. The result is a project equally useful as a portfolio
-            piece, an architecture reference, and a starting point for
-            your own autonomous agent.
-          </p>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   Features
-   ═══════════════════════════════════════════════════════════════ */
-
-const FEATURES = [
-  {
-    n: "I",
-    title: "Agentic planning",
-    body: "Every task is decomposed into an ordered, observable plan. The agent reasons about each step before touching a file — so you always know what it's about to do and why. Assumptions and risks are surfaced upfront, never hidden inside a black box.",
-  },
-  {
-    n: "II",
-    title: "Code generation & editing",
-    body: "Reads, writes, and edits files with surgical search-and-replace. Real diffs stream into the UI as they happen — no opaque magic edits. You see every addition, every deletion, every context line, exactly as a reviewer would.",
-  },
-  {
-    n: "III",
-    title: "Live terminal & logs",
-    body: "Watch every shell command, test run, and git operation stream in real time. Filterable log levels, syntax-highlighted output, no surprises. The terminal panel auto-scrolls so you're always looking at the latest line the agent produced.",
-  },
-  {
-    n: "IV",
-    title: "GitHub-native workflow",
-    body: "Connects to your repositories, creates feature branches, commits with conventional messages, and opens pull requests with full context for reviewers. The GitHub client is a typed REST v3 wrapper — every call returns a shape the UI can trust.",
-  },
-  {
-    n: "V",
-    title: "Claude-first, pluggable models",
-    body: "Anthropic Claude is the primary reasoning engine, with extended thinking support for Sonnet and Opus. A clean provider abstraction means you can swap in any LLM — including a sandbox-friendly Z.ai default that works without a user-provided key.",
-  },
-  {
-    n: "VI",
-    title: "Cloud-safe by design",
-    body: "Mutating tools are simulated on Vercel's read-only runtime and executed for real in a local worker. The same UI works in both modes — no broken demos, no if-statements scattered through components. The runtime abstraction handles it.",
-  },
-];
-
-function Features() {
-  return (
-    <section
-      id="features"
-      className="relative py-32 md:py-48 px-5 sm:px-8 md:px-10 border-t border-white/10"
-    >
-      <div className="max-w-6xl">
-        <p className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground mb-8">
-          (02) — Capabilities
-        </p>
-        <h2
-          className="text-[clamp(28px,5vw,52px)] leading-[1.1] tracking-tight text-foreground mb-20 max-w-3xl"
-          style={{ fontFamily: "var(--font-heading)" }}
-        >
-          Everything an autonomous engineer needs, nothing it doesn't.
-        </h2>
-
-        <div className="divide-y divide-white/10">
-          {FEATURES.map((f) => (
-            <div
-              key={f.n}
-              className="grid grid-cols-1 md:grid-cols-[60px_1fr_1.5fr] gap-2 md:gap-8 py-10 group"
+          {/* CTAs */}
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.15 }}
+            className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row"
+          >
+            <button
+              onClick={() => enterApp("new-task")}
+              className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-violet-600 px-6 py-3 text-base font-semibold text-white shadow-lg shadow-violet-600/25 hover:bg-violet-700 transition-colors sm:w-auto"
             >
-              <span
-                className="text-[15px] text-muted-foreground/60"
-                style={{ fontFamily: "var(--font-heading)" }}
-              >
-                {f.n}
-              </span>
-              <h3
-                className="text-[22px] md:text-[26px] tracking-tight text-foreground leading-tight"
-                style={{ fontFamily: "var(--font-heading)" }}
-              >
-                {f.title}
-              </h3>
-              <p className="text-[16px] leading-relaxed text-muted-foreground">
-                {f.body}
-              </p>
-            </div>
+              <Bot className="size-4" />
+              Start a task
+            </button>
+            <button
+              onClick={() => enterApp("dashboard")}
+              className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-slate-300 bg-white px-6 py-3 text-base font-semibold text-slate-700 shadow-sm hover:bg-slate-50 transition-colors sm:w-auto"
+            >
+              View dashboard
+              <ArrowRight className="size-4" />
+            </button>
+          </motion.div>
+
+          {/* Micro proof */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+            className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-slate-500"
+          >
+            <span className="inline-flex items-center gap-1.5">
+              <CheckCircle2 className="size-4 text-violet-600" />
+              No setup required
+            </span>
+            <span className="inline-flex items-center gap-1.5">
+              <CheckCircle2 className="size-4 text-violet-600" />
+              Works on Vercel free tier
+            </span>
+            <span className="inline-flex items-center gap-1.5">
+              <CheckCircle2 className="size-4 text-violet-600" />
+              Bring your own Claude key
+            </span>
+          </motion.div>
+        </div>
+
+        {/* Code / terminal block */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.25 }}
+          className="mx-auto mt-16 max-w-3xl"
+        >
+          <HeroCodeBlock />
+        </motion.div>
+      </div>
+    </section>
+  );
+}
+
+function HeroCodeBlock() {
+  return (
+    <div className="overflow-hidden rounded-xl border border-slate-200 shadow-2xl shadow-slate-900/10">
+      {/* Title bar */}
+      <div className="flex items-center justify-between border-b border-slate-200 bg-slate-50 px-4 py-2.5">
+        <div className="flex items-center gap-2">
+          <span className="size-3 rounded-full bg-red-400" />
+          <span className="size-3 rounded-full bg-amber-400" />
+          <span className="size-3 rounded-full bg-emerald-400" />
+          <span className="ml-2 text-xs font-medium text-slate-500">
+            forge — agent session
+          </span>
+        </div>
+        <span className="inline-flex items-center gap-1 text-xs text-slate-400">
+          <span className="size-1.5 rounded-full bg-emerald-500" />
+          claude-sonnet-4.5
+        </span>
+      </div>
+      {/* Body */}
+      <div className="grid gap-0 sm:grid-cols-[200px_1fr]">
+        {/* Plan sidebar */}
+        <div className="border-b border-slate-200 bg-slate-50/50 p-4 sm:border-b-0 sm:border-r">
+          <div className="mb-3 text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+            Plan
+          </div>
+          <ol className="space-y-2">
+            {[
+              { t: "Explore repository", done: true },
+              { t: "Read auth/session.ts", done: true },
+              { t: "Edit login route", done: true },
+              { t: "Add regression test", done: false, active: true },
+              { t: "Run test suite", done: false },
+              { t: "Commit & open PR", done: false },
+            ].map((step, i) => (
+              <li key={i} className="flex items-center gap-2 text-xs">
+                <span
+                  className={`flex size-4 shrink-0 items-center justify-center rounded-full text-[9px] ${
+                    step.done
+                      ? "bg-violet-600 text-white"
+                      : step.active
+                      ? "bg-violet-100 text-violet-600 ring-2 ring-violet-400"
+                      : "bg-slate-200 text-slate-400"
+                  }`}
+                >
+                  {step.done ? <Check className="size-2.5" /> : i + 1}
+                </span>
+                <span
+                  className={
+                    step.done
+                      ? "text-slate-400 line-through"
+                      : step.active
+                      ? "text-slate-900 font-medium"
+                      : "text-slate-500"
+                  }
+                >
+                  {step.t}
+                </span>
+              </li>
+            ))}
+          </ol>
+        </div>
+        {/* Terminal */}
+        <div className="bg-slate-900 p-4 font-mono text-xs leading-relaxed">
+          <div className="text-slate-400">$ forge read src/lib/auth/session.ts</div>
+          <div className="text-slate-400">→ 50 lines read</div>
+          <div className="text-amber-400">⚠ line 38: maxAge ignores `persistent` flag</div>
+          <div className="mt-2 text-slate-400">$ forge edit src/app/api/auth/login/route.ts</div>
+          <div className="text-emerald-400">+ await setSession(user.id, remember)</div>
+          <div className="text-red-400">- await setSession(user.id, false)</div>
+          <div className="mt-2 text-slate-400">$ forge exec bun run test</div>
+          <div className="text-emerald-400">✓ 2 passed</div>
+          <div className="mt-2 text-slate-400">$ forge gh pr create</div>
+          <div className="text-emerald-400">✓ PR #143 opened</div>
+          <div className="text-slate-400">
+            https://github.com/acme/webapp/pull/143
+            <span className="ml-1 inline-block h-3.5 w-1.5 animate-pulse bg-violet-400 align-middle" />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ===================================================================
+   Social proof strip
+   =================================================================== */
+
+function SocialProof() {
+  const names = ["Northwind", "Quanta Labs", "Helix", "Foundry", "Aperture", "Lumen"];
+  return (
+    <section className="border-y border-slate-200 bg-slate-50/50 py-10">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <p className="text-center text-xs font-semibold uppercase tracking-widest text-slate-400">
+          Built for the workflows of modern engineering teams
+        </p>
+        <div className="mt-6 flex flex-wrap items-center justify-center gap-x-10 gap-y-4">
+          {names.map((n) => (
+            <span
+              key={n}
+              className="text-base font-semibold text-slate-400"
+            >
+              {n}
+            </span>
           ))}
         </div>
       </div>
@@ -578,90 +357,264 @@ function Features() {
   );
 }
 
-/* ═══════════════════════════════════════════════════════════════
+/* ===================================================================
+   Features
+   =================================================================== */
+
+const FEATURES = [
+  {
+    icon: Bot,
+    title: "Agentic planning",
+    body: "Every task is decomposed into an ordered, observable plan. The agent reasons about each step before touching a file, so you always know what it's about to do and why.",
+    color: "violet",
+  },
+  {
+    icon: Code2,
+    title: "Code generation & editing",
+    body: "Reads, writes, and edits files with surgical search-and-replace. Real diffs stream into the UI as they happen — no opaque magic edits.",
+    color: "purple",
+  },
+  {
+    icon: Terminal,
+    title: "Live terminal & logs",
+    body: "Watch every shell command, test run, and git operation stream in real time. Filterable log levels, syntax-highlighted output, no surprises.",
+    color: "fuchsia",
+  },
+  {
+    icon: GitPullRequest,
+    title: "GitHub-native workflow",
+    body: "Connects to your repositories, creates feature branches, commits with conventional messages, and opens pull requests with full context for reviewers.",
+    color: "violet",
+  },
+  {
+    icon: Cpu,
+    title: "Claude-first, pluggable models",
+    body: "Anthropic Claude is the primary reasoning engine. A clean provider abstraction means you can swap in any LLM — including a sandbox-friendly default.",
+    color: "purple",
+  },
+  {
+    icon: ShieldCheck,
+    title: "Cloud-safe by design",
+    body: "Mutating tools are simulated on Vercel's read-only runtime and executed for real in a local worker. The same UI works in both modes — no broken demos.",
+    color: "fuchsia",
+  },
+];
+
+const COLOR_MAP: Record<string, { bg: string; text: string; ring: string }> = {
+  violet: { bg: "bg-violet-50", text: "text-violet-600", ring: "ring-violet-100" },
+  purple: { bg: "bg-purple-50", text: "text-purple-600", ring: "ring-purple-100" },
+  fuchsia: { bg: "bg-fuchsia-50", text: "text-fuchsia-600", ring: "ring-fuchsia-100" },
+};
+
+function Features() {
+  return (
+    <section id="features" className="bg-white py-24 sm:py-32">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-2xl text-center">
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-violet-200 bg-violet-50 px-3 py-1 text-xs font-semibold text-violet-700">
+            <Layers className="size-3" />
+            Capabilities
+          </span>
+          <h2 className="mt-6 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
+            Everything an autonomous engineer needs
+          </h2>
+          <p className="mt-4 text-lg text-slate-600">
+            Each capability is a clean, typed module — not a monolithic agent
+            loop. That's what makes Forge portable across runtimes and
+            trustworthy in production.
+          </p>
+        </div>
+
+        <div className="mt-16 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {FEATURES.map((f, i) => {
+            const c = COLOR_MAP[f.color];
+            return (
+              <motion.div
+                key={f.title}
+                initial={{ opacity: 0, y: 12 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-80px" }}
+                transition={{ duration: 0.4, delay: i * 0.05 }}
+                className="group rounded-2xl border border-slate-200 bg-white p-6 transition-all hover:border-violet-200 hover:shadow-lg hover:shadow-violet-100/50"
+              >
+                <div
+                  className={`mb-4 inline-flex size-11 items-center justify-center rounded-xl ${c.bg} ${c.text} ring-1 ${c.ring}`}
+                >
+                  <f.icon className="size-5" />
+                </div>
+                <h3 className="text-lg font-semibold text-slate-900">
+                  {f.title}
+                </h3>
+                <p className="mt-2 text-sm leading-relaxed text-slate-600">
+                  {f.body}
+                </p>
+              </motion.div>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ===================================================================
+   How it works
+   =================================================================== */
+
+const STEPS = [
+  {
+    n: "1",
+    icon: Bot,
+    title: "Describe the task",
+    body: "Tell Forge what you want in plain English. Pick a repository, a branch, and a model. The orchestrator takes it from there.",
+  },
+  {
+    n: "2",
+    icon: Workflow,
+    title: "Watch the plan form",
+    body: "The planner decomposes your task into 5–9 ordered steps with explicit tool calls. You see assumptions and risks before any code is written.",
+  },
+  {
+    n: "3",
+    icon: Terminal,
+    title: "Follow execution live",
+    body: "Terminal output, file diffs, and a step timeline stream in real time. Cancel anytime. Every action is logged for audit.",
+  },
+  {
+    n: "4",
+    icon: GitPullRequest,
+    title: "Review the pull request",
+    body: "Forge commits with conventional messages and opens a pull request with a full summary. You review, merge, ship.",
+  },
+];
+
+function HowItWorks() {
+  return (
+    <section id="how-it-works" className="bg-slate-50 py-24 sm:py-32">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-2xl text-center">
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-violet-200 bg-violet-50 px-3 py-1 text-xs font-semibold text-violet-700">
+            <Zap className="size-3" />
+            Workflow
+          </span>
+          <h2 className="mt-6 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
+            From prompt to pull request
+          </h2>
+          <p className="mt-4 text-lg text-slate-600">
+            Four observable stages. No magic, no hidden state.
+          </p>
+        </div>
+
+        <div className="mt-16 grid gap-8 md:grid-cols-2 lg:grid-cols-4">
+          {STEPS.map((s, i) => (
+            <motion.div
+              key={s.n}
+              initial={{ opacity: 0, y: 12 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-60px" }}
+              transition={{ duration: 0.4, delay: i * 0.06 }}
+              className="relative"
+            >
+              {/* Connector line */}
+              {i < STEPS.length - 1 && (
+                <div className="absolute left-12 top-12 hidden h-px w-full bg-gradient-to-r from-violet-200 to-transparent lg:block" />
+              )}
+              <div className="relative flex size-12 items-center justify-center rounded-xl bg-white shadow-md ring-1 ring-slate-200">
+                <s.icon className="size-5 text-violet-600" />
+                <span className="absolute -right-1 -top-1 flex size-5 items-center justify-center rounded-full bg-violet-600 text-[10px] font-bold text-white">
+                  {s.n}
+                </span>
+              </div>
+              <h3 className="mt-4 text-base font-semibold text-slate-900">
+                {s.title}
+              </h3>
+              <p className="mt-2 text-sm leading-relaxed text-slate-600">
+                {s.body}
+              </p>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ===================================================================
    Architecture
-   ═══════════════════════════════════════════════════════════════ */
+   =================================================================== */
 
 const LAYERS = [
   {
-    n: "01",
+    icon: Bot,
     name: "Orchestrator",
-    desc: "Holds the task state machine. Sequences planner → executor → reviewer. Tracks progress, handles cancellation, emits structured logs at every transition.",
-    tag: "agent",
+    desc: "Holds the task state machine, sequences planner → executor → reviewer.",
   },
   {
-    n: "02",
+    icon: Workflow,
     name: "Planner",
-    desc: "Asks the LLM to decompose the task into ordered, typed steps with explicit tool bindings. Falls back to scenario-based planning on any error so the demo always works.",
-    tag: "llm",
+    desc: "Asks the LLM to decompose the task into ordered, typed steps with tool bindings.",
   },
   {
-    n: "03",
+    icon: Cpu,
     name: "Executor",
-    desc: "Walks the plan one step at a time. Invokes tools, streams terminal output, captures file diffs, updates progress. Checks a cancel flag between steps.",
-    tag: "agent",
+    desc: "Walks the plan, invokes tools, streams events, captures diffs and logs.",
   },
   {
-    n: "04",
+    icon: Terminal,
     name: "Runtime",
-    desc: "Abstracts where tools actually execute — local worker, cloud serverless, or demo mode. The UI never branches on runtime; it asks for a result and renders it.",
-    tag: "runtime",
+    desc: "Abstracts where tools run — local worker, cloud serverless, or demo mode.",
   },
   {
-    n: "05",
+    icon: FileCode2,
     name: "Tools",
-    desc: "Twelve typed tool definitions: read_file, write_file, edit_file, list_directory, run_command, search_code, git_commit, git_push, open_pr, run_tests, http_request, llm_reason.",
-    tag: "agent",
+    desc: "12 typed tool definitions: read_file, edit_file, run_command, git_commit, open_pr.",
   },
   {
-    n: "06",
+    icon: Github,
     name: "GitHub layer",
-    desc: "REST v3 client for repos, branches, commits, and pull requests. Typed responses, graceful degradation when no token is configured, no raw API leaks.",
-    tag: "github",
+    desc: "REST v3 client for repos, branches, commits, and pull requests.",
   },
 ];
 
 function Architecture() {
   return (
-    <section
-      id="architecture"
-      className="relative py-32 md:py-48 px-5 sm:px-8 md:px-10 border-t border-white/10"
-    >
-      <div className="max-w-6xl">
-        <p className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground mb-8">
-          (03) — Architecture
-        </p>
-        <h2
-          className="text-[clamp(28px,5vw,52px)] leading-[1.1] tracking-tight text-foreground mb-20 max-w-3xl"
-          style={{ fontFamily: "var(--font-heading)" }}
-        >
-          Clean layers, not a black box.
-        </h2>
+    <section id="architecture" className="bg-white py-24 sm:py-32">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-2xl text-center">
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-violet-200 bg-violet-50 px-3 py-1 text-xs font-semibold text-violet-700">
+            <Layers className="size-3" />
+            Architecture
+          </span>
+          <h2 className="mt-6 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
+            Clean layers, not a black box
+          </h2>
+          <p className="mt-4 text-lg text-slate-600">
+            Forge is built like a real product, not a notebook. Each layer has
+            a single responsibility and a typed contract — so it's safe to
+            extend and pleasant to debug.
+          </p>
+        </div>
 
-        <div className="divide-y divide-white/10">
-          {LAYERS.map((l) => (
-            <div
-              key={l.n}
-              className="grid grid-cols-1 md:grid-cols-[80px_1fr_1.5fr_auto] gap-2 md:gap-8 py-8 items-start"
+        <div className="mt-16 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {LAYERS.map((l, i) => (
+            <motion.div
+              key={l.name}
+              initial={{ opacity: 0, y: 8 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.35, delay: i * 0.04 }}
+              className="flex items-start gap-4 rounded-xl border border-slate-200 bg-white p-5 transition-colors hover:border-violet-200"
             >
-              <span
-                className="text-[15px] text-muted-foreground/50 font-mono"
-              >
-                {l.n}
-              </span>
-              <h3
-                className="text-[20px] md:text-[24px] tracking-tight text-foreground"
-                style={{ fontFamily: "var(--font-heading)" }}
-              >
-                {l.name}
-              </h3>
-              <p className="text-[15px] leading-relaxed text-muted-foreground">
-                {l.desc}
-              </p>
-              <span className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground/50 border border-white/10 rounded px-2 py-1 font-mono whitespace-nowrap">
-                {l.tag}
-              </span>
-            </div>
+              <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-violet-50 text-violet-600">
+                <l.icon className="size-5" />
+              </div>
+              <div>
+                <h3 className="text-sm font-semibold text-slate-900">
+                  {l.name}
+                </h3>
+                <p className="mt-1 text-sm text-slate-600">{l.desc}</p>
+              </div>
+            </motion.div>
           ))}
         </div>
       </div>
@@ -669,161 +622,60 @@ function Architecture() {
   );
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   Workflow
-   ═══════════════════════════════════════════════════════════════ */
+/* ===================================================================
+   Code showcase
+   =================================================================== */
 
-const STEPS = [
-  {
-    n: "01",
-    title: "Describe the task",
-    body: "Tell Forge what you want in plain English. Pick a repository, a branch, and a model. The orchestrator takes it from there. No prompt engineering required — just describe the outcome you want and any constraints that matter.",
-  },
-  {
-    n: "02",
-    title: "Watch the plan form",
-    body: "The planner decomposes your task into five to nine ordered steps with explicit tool calls. You see assumptions and risks before any code is written. Cancel here if the plan looks wrong — no harm done.",
-  },
-  {
-    n: "03",
-    title: "Follow execution live",
-    body: "Terminal output, file diffs, and a step timeline stream in real time. Filterable log levels, syntax-highlighted diffs, auto-scrolling terminal. Cancel anytime — every action is logged for audit.",
-  },
-  {
-    n: "04",
-    title: "Review the pull request",
-    body: "Forge commits with conventional messages and opens a pull request with a full summary, root-cause analysis, and testing steps. You review, merge, ship. The PR is the unit of review — always.",
-  },
-];
+function CodeShowcase() {
+  const commands = [
+    { cmd: "forge plan", desc: "Generate a plan" },
+    { cmd: "forge read", desc: "Read a file" },
+    { cmd: "forge edit", desc: "Edit a file" },
+    { cmd: "forge exec", desc: "Run a command" },
+    { cmd: "forge test", desc: "Run the test suite" },
+    { cmd: "forge commit", desc: "Commit changes" },
+    { cmd: "forge push", desc: "Push the branch" },
+    { cmd: "forge pr", desc: "Open a pull request" },
+  ];
 
-function Workflow() {
   return (
-    <section
-      id="workflow"
-      className="relative py-32 md:py-48 px-5 sm:px-8 md:px-10 border-t border-white/10"
-    >
-      <div className="max-w-6xl">
-        <p className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground mb-8">
-          (04) — Workflow
-        </p>
-        <h2
-          className="text-[clamp(28px,5vw,52px)] leading-[1.1] tracking-tight text-foreground mb-20 max-w-3xl"
-          style={{ fontFamily: "var(--font-heading)" }}
-        >
-          From prompt to pull request.
-        </h2>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-16 gap-y-16">
-          {STEPS.map((s) => (
-            <div key={s.n}>
-              <div className="flex items-baseline gap-4 mb-4">
-                <span
-                  className="text-[15px] text-muted-foreground/50 font-mono"
-                >
-                  {s.n}
-                </span>
-                <div className="h-px flex-1 bg-white/10" />
-              </div>
-              <h3
-                className="text-[26px] md:text-[32px] tracking-tight text-foreground mb-4"
-                style={{ fontFamily: "var(--font-heading)" }}
-              >
-                {s.title}
-              </h3>
-              <p className="text-[16px] leading-relaxed text-muted-foreground">
-                {s.body}
-              </p>
-            </div>
-          ))}
+    <section className="bg-slate-50 py-24 sm:py-32">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-2xl text-center">
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-violet-200 bg-violet-50 px-3 py-1 text-xs font-semibold text-violet-700">
+            <Code2 className="size-3" />
+            Under the hood
+          </span>
+          <h2 className="mt-6 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
+            Real commands. Real code. No magic.
+          </h2>
+          <p className="mt-4 text-lg text-slate-600">
+            The agent's planner is a typed function with a clean fallback —
+            exactly the kind of code you'd want in a production codebase.
+          </p>
         </div>
-      </div>
-    </section>
-  );
-}
 
-/* ═══════════════════════════════════════════════════════════════
-   Terminal & Code — commands + planner source
-   ═══════════════════════════════════════════════════════════════ */
-
-function TerminalCode() {
-  return (
-    <section className="relative py-32 md:py-48 px-5 sm:px-8 md:px-10 border-t border-white/10">
-      <div className="max-w-6xl">
-        <p className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground mb-8">
-          (05) — Under the hood
-        </p>
-        <h2
-          className="text-[clamp(28px,5vw,52px)] leading-[1.1] tracking-tight text-foreground mb-20 max-w-3xl"
-          style={{ fontFamily: "var(--font-heading)" }}
-        >
-          Real commands. Real code. No magic.
-        </h2>
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Terminal output */}
-          <div className="border border-white/10 rounded-lg overflow-hidden">
-            <div className="flex items-center gap-2 px-4 py-3 border-b border-white/10 bg-white/[0.02]">
-              <span className="w-3 h-3 rounded-full bg-white/15" />
-              <span className="w-3 h-3 rounded-full bg-white/15" />
-              <span className="w-3 h-3 rounded-full bg-white/15" />
-              <span className="ml-2 text-[12px] text-muted-foreground font-mono">
-                forge — agent session
-              </span>
-            </div>
-            <div
-              className="p-5 text-[13px] leading-[1.7] font-mono space-y-1"
-              style={{ background: "rgba(0,0,0,0.4)" }}
-            >
-              <div className="text-muted-foreground">
-                $ forge read src/lib/auth/session.ts
-              </div>
-              <div className="text-muted-foreground">→ 50 lines read</div>
-              <div className="text-amber-400">
-                ⚠ line 38: maxAge ignores `persistent` flag
-              </div>
-              <div className="text-muted-foreground mt-2">
-                $ forge edit src/app/api/auth/login/route.ts
-              </div>
-              <div className="text-emerald-400">
-                + await setSession(user.id, remember)
-              </div>
-              <div className="text-red-400">
-                - await setSession(user.id, false)
-              </div>
-              <div className="text-muted-foreground mt-2">
-                $ forge exec bun run test
-              </div>
-              <div className="text-emerald-400">✓ 2 passed (2)</div>
-              <div className="text-muted-foreground mt-2">
-                $ forge gh pr create --base main
-              </div>
-              <div className="text-emerald-400">✓ PR #143 opened</div>
-              <div className="text-muted-foreground">
-                https://github.com/acme/webapp/pull/143
-                <span className="animate-blink inline-block w-[2px] h-[1.1em] bg-emerald-400 align-middle ml-[2px]" />
-              </div>
-            </div>
-          </div>
-
-          {/* Planner source code */}
-          <div className="border border-white/10 rounded-lg overflow-hidden">
-            <div className="flex items-center gap-2 px-4 py-3 border-b border-white/10 bg-white/[0.02]">
-              <span className="text-[12px] text-muted-foreground font-mono">
+        <div className="mt-16 grid gap-6 lg:grid-cols-2">
+          {/* Source code */}
+          <div className="overflow-hidden rounded-xl border border-slate-200 shadow-lg shadow-slate-900/5">
+            <div className="flex items-center gap-2 border-b border-slate-200 bg-slate-50 px-4 py-2.5">
+              <span className="text-xs font-medium text-slate-500">
                 src/lib/agent/planner.ts
               </span>
             </div>
-            <pre
-              className="p-5 text-[12px] leading-[1.7] font-mono overflow-x-auto"
-              style={{ background: "rgba(0,0,0,0.4)" }}
-            >
+            <pre className="bg-slate-900 p-5 text-xs leading-relaxed text-slate-300 overflow-x-auto">
               <code>{`// Decompose a task into an ordered, typed plan.
-export async function planTask(input: PlannerInput): Promise<PlannerResult> {
+export async function planTask(
+  input: PlannerInput
+): Promise<PlannerResult> {
   if (input.useLlm) {
     try {
       const provider = getCachedProvider();
       const res = await provider.complete({
-        messages: [{ role: "system", content: PLANNER_SYSTEM_PROMPT },
-                   { role: "user", content: input.description }],
+        messages: [
+          { role: "system", content: PLANNER_SYSTEM_PROMPT },
+          { role: "user", content: input.description },
+        ],
         model: provider.models[0]?.id,
       });
       const plan = parseLlmPlan(res.content, input.taskId);
@@ -836,123 +688,107 @@ export async function planTask(input: PlannerInput): Promise<PlannerResult> {
 }`}</code>
             </pre>
           </div>
-        </div>
 
-        {/* Command reference */}
-        <div className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-4">
-          {[
-            { cmd: "forge plan", desc: "Generate a plan" },
-            { cmd: "forge read", desc: "Read a file" },
-            { cmd: "forge edit", desc: "Edit a file" },
-            { cmd: "forge exec", desc: "Run a command" },
-            { cmd: "forge test", desc: "Run the test suite" },
-            { cmd: "forge commit", desc: "Commit changes" },
-            { cmd: "forge push", desc: "Push the branch" },
-            { cmd: "forge pr", desc: "Open a pull request" },
-          ].map((c) => (
-            <div
-              key={c.cmd}
-              className="border border-white/10 rounded-lg p-4 hover:border-white/20 transition-colors"
-            >
-              <div className="font-mono text-[13px] text-foreground mb-1">
-                {c.cmd}
+          {/* Command reference */}
+          <div className="grid grid-cols-2 gap-3">
+            {commands.map((c) => (
+              <div
+                key={c.cmd}
+                className="rounded-lg border border-slate-200 bg-white p-4 transition-colors hover:border-violet-200"
+              >
+                <div className="font-mono text-sm font-semibold text-slate-900">
+                  <span className="text-violet-600">$</span> {c.cmd}
+                </div>
+                <div className="mt-1 text-xs text-slate-500">{c.desc}</div>
               </div>
-              <div className="text-[12px] text-muted-foreground">
-                {c.desc}
-              </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
     </section>
   );
 }
 
-/* ═══════════════════════════════════════════════════════════════
+/* ===================================================================
    Final CTA
-   ═══════════════════════════════════════════════════════════════ */
+   =================================================================== */
 
 function FinalCTA() {
   const enterApp = useAppStore((s) => s.enterApp);
-  const pillBase =
-    "inline-flex items-center justify-center rounded-full text-[14px] sm:text-[16px] px-5 sm:px-6 py-[0.4em] mx-[0.2em] mb-[0.4em] whitespace-nowrap transition-colors duration-200 cursor-pointer";
-
   return (
-    <section className="relative py-32 md:py-48 px-5 sm:px-8 md:px-10 border-t border-white/10 text-center">
-      <div className="max-w-3xl mx-auto">
-        <p className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground mb-8">
-          (06) — Start
-        </p>
-        <h2
-          className="text-[clamp(32px,6vw,64px)] leading-[1.08] tracking-tight text-foreground mb-8"
-          style={{ fontFamily: "var(--font-heading)" }}
-        >
-          Ship your next PR with an AI pair engineer.
-        </h2>
-        <p className="text-[17px] text-muted-foreground mb-12 max-w-xl mx-auto">
-          Launch the app, describe a task, and watch Forge plan, code, test,
-          and open a pull request — all in real time.
-        </p>
-        <div className="flex flex-wrap justify-center gap-y-1">
-          <button
-            className={`${pillBase} bg-[#e8e6e1] text-black border border-white/10 hover:bg-transparent hover:text-[#e8e6e1] hover:border-[#e8e6e1]`}
-            onClick={() => enterApp("new-task")}
-          >
-            Start a task
-          </button>
-          <button
-            className={`${pillBase} bg-transparent text-[#e8e6e1] border border-[#e8e6e1] hover:bg-[#e8e6e1] hover:text-black`}
-            onClick={() => enterApp("dashboard")}
-          >
-            View dashboard
-          </button>
+    <section className="bg-white py-24 sm:py-32">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-violet-600 to-purple-700 px-6 py-16 sm:px-16 sm:py-20 text-center shadow-2xl shadow-violet-600/30">
+          {/* Decorative grid */}
+          <div
+            className="absolute inset-0 opacity-10"
+            style={{
+              backgroundImage:
+                "linear-gradient(to right, white 1px, transparent 1px), linear-gradient(to bottom, white 1px, transparent 1px)",
+              backgroundSize: "40px 40px",
+            }}
+          />
+          <div className="relative">
+            <h2 className="text-balance text-3xl font-bold tracking-tight text-white sm:text-4xl lg:text-5xl">
+              Ship your next PR with an AI pair engineer
+            </h2>
+            <p className="mx-auto mt-4 max-w-xl text-lg text-violet-100">
+              Launch the app, describe a task, and watch Forge plan, code,
+              test, and open a pull request — all in real time.
+            </p>
+            <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
+              <button
+                onClick={() => enterApp("new-task")}
+                className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-white px-6 py-3 text-base font-semibold text-violet-700 shadow-lg hover:bg-violet-50 transition-colors sm:w-auto"
+              >
+                <Bot className="size-4" />
+                Start a task
+              </button>
+              <button
+                onClick={() => enterApp("dashboard")}
+                className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-white/30 bg-white/10 px-6 py-3 text-base font-semibold text-white backdrop-blur hover:bg-white/20 transition-colors sm:w-auto"
+              >
+                View dashboard
+                <ArrowRight className="size-4" />
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </section>
   );
 }
 
-/* ═══════════════════════════════════════════════════════════════
+/* ===================================================================
    Footer
-   ═══════════════════════════════════════════════════════════════ */
+   =================================================================== */
 
 function Footer() {
   const enterApp = useAppStore((s) => s.enterApp);
   return (
-    <footer className="relative border-t border-white/10 px-5 sm:px-8 md:px-10 py-16">
-      <div className="max-w-6xl">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-16">
-          <div className="col-span-2">
-            <div className="flex items-center gap-3 mb-4">
-              <span
-                className="text-[24px] tracking-tight text-foreground"
-                style={{ fontFamily: "var(--font-heading)" }}
-              >
-                Forge&reg;
-              </span>
-              <span
-                className="text-[28px] text-foreground select-none"
-                style={{ letterSpacing: "-0.02em" }}
-              >
-                ✳
+    <footer className="border-t border-slate-200 bg-slate-50">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
+        <div className="grid gap-8 md:grid-cols-4">
+          <div className="md:col-span-1">
+            <div className="flex items-center gap-2">
+              <div className="flex size-8 items-center justify-center rounded-lg bg-gradient-to-br from-violet-600 to-purple-600">
+                <Bot className="size-5 text-white" />
+              </div>
+              <span className="text-lg font-semibold text-slate-900">
+                Forge
               </span>
             </div>
-            <p className="text-[15px] text-muted-foreground max-w-xs leading-relaxed">
+            <p className="mt-3 text-sm text-slate-500">
               An autonomous software engineering agent. Claude-powered,
               GitHub-native, deployable on Vercel.
             </p>
           </div>
           <div>
-            <h4
-              className="text-[12px] uppercase tracking-[0.15em] text-muted-foreground mb-4"
-              style={{ fontFamily: "var(--font-heading)" }}
-            >
-              Product
-            </h4>
-            <ul className="space-y-3 text-[15px]">
+            <h4 className="text-sm font-semibold text-slate-900">Product</h4>
+            <ul className="mt-3 space-y-2 text-sm text-slate-500">
               <li>
                 <button
-                  className="text-foreground hover:opacity-60 transition-opacity"
+                  className="hover:text-slate-900 transition-colors"
                   onClick={() => enterApp("dashboard")}
                 >
                   Dashboard
@@ -960,7 +796,7 @@ function Footer() {
               </li>
               <li>
                 <button
-                  className="text-foreground hover:opacity-60 transition-opacity"
+                  className="hover:text-slate-900 transition-colors"
                   onClick={() => enterApp("new-task")}
                 >
                   New task
@@ -968,7 +804,7 @@ function Footer() {
               </li>
               <li>
                 <button
-                  className="text-foreground hover:opacity-60 transition-opacity"
+                  className="hover:text-slate-900 transition-colors"
                   onClick={() => enterApp("history")}
                 >
                   History
@@ -976,7 +812,7 @@ function Footer() {
               </li>
               <li>
                 <button
-                  className="text-foreground hover:opacity-60 transition-opacity"
+                  className="hover:text-slate-900 transition-colors"
                   onClick={() => enterApp("settings")}
                 >
                   Settings
@@ -985,19 +821,14 @@ function Footer() {
             </ul>
           </div>
           <div>
-            <h4
-              className="text-[12px] uppercase tracking-[0.15em] text-muted-foreground mb-4"
-              style={{ fontFamily: "var(--font-heading)" }}
-            >
-              Resources
-            </h4>
-            <ul className="space-y-3 text-[15px]">
+            <h4 className="text-sm font-semibold text-slate-900">Resources</h4>
+            <ul className="mt-3 space-y-2 text-sm text-slate-500">
               <li>
                 <a
                   href="https://github.com/KeshavCracks/sitty#readme"
                   target="_blank"
                   rel="noreferrer"
-                  className="text-foreground hover:opacity-60 transition-opacity"
+                  className="hover:text-slate-900 transition-colors"
                 >
                   README
                 </a>
@@ -1007,7 +838,7 @@ function Footer() {
                   href="https://github.com/KeshavCracks/sitty/blob/main/docs/ARCHITECTURE.md"
                   target="_blank"
                   rel="noreferrer"
-                  className="text-foreground hover:opacity-60 transition-opacity"
+                  className="hover:text-slate-900 transition-colors"
                 >
                   Architecture
                 </a>
@@ -1017,7 +848,7 @@ function Footer() {
                   href="https://github.com/KeshavCracks/sitty/blob/main/docs/DEPLOYMENT.md"
                   target="_blank"
                   rel="noreferrer"
-                  className="text-foreground hover:opacity-60 transition-opacity"
+                  className="hover:text-slate-900 transition-colors"
                 >
                   Deployment
                 </a>
@@ -1027,18 +858,34 @@ function Footer() {
                   href="https://vercel.com/new"
                   target="_blank"
                   rel="noreferrer"
-                  className="text-foreground hover:opacity-60 transition-opacity"
+                  className="hover:text-slate-900 transition-colors"
                 >
                   Deploy on Vercel
                 </a>
               </li>
             </ul>
           </div>
+          <div>
+            <h4 className="text-sm font-semibold text-slate-900">Connect</h4>
+            <ul className="mt-3 space-y-2 text-sm text-slate-500">
+              <li>
+                <a
+                  href="https://github.com/KeshavCracks/sitty"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-1.5 hover:text-slate-900 transition-colors"
+                >
+                  <Github className="size-4" />
+                  GitHub
+                </a>
+              </li>
+            </ul>
+          </div>
         </div>
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pt-8 border-t border-white/10 text-[13px] text-muted-foreground">
+        <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-slate-200 pt-8 text-sm text-slate-400 sm:flex-row">
           <p>© {new Date().getFullYear()} Forge. Built by KeshavCracks.</p>
-          <p className="flex items-center gap-2">
-            <span>✳</span>
+          <p className="flex items-center gap-1.5">
+            <GitBranch className="size-3.5" />
             Inspired by OpenHands &amp; Devin
           </p>
         </div>
@@ -1047,21 +894,21 @@ function Footer() {
   );
 }
 
-/* ═══════════════════════════════════════════════════════════════
+/* ===================================================================
    Page
-   ═══════════════════════════════════════════════════════════════ */
+   =================================================================== */
 
 export function LandingPage() {
   return (
-    <div className="flex min-h-screen flex-col bg-background" style={{ fontFamily: "var(--font-body)" }}>
+    <div className="min-h-screen bg-white text-slate-900" style={{ fontFamily: "var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif" }}>
       <Navbar />
-      <main className="flex-1">
+      <main>
         <Hero />
-        <Manifesto />
+        <SocialProof />
         <Features />
+        <HowItWorks />
         <Architecture />
-        <Workflow />
-        <TerminalCode />
+        <CodeShowcase />
         <FinalCTA />
       </main>
       <Footer />
