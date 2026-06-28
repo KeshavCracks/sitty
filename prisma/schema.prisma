@@ -1,0 +1,97 @@
+// Forge — AI Software Engineer
+// Prisma schema. SQLite is used so the project runs anywhere (Vercel,
+// local, Docker) without external dependencies.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+/// A unit of work the agent was asked to perform.
+model Task {
+  id              String   @id @default(cuid())
+  title           String
+  description     String
+  status          String   @default("queued") // queued|planning|executing|reviewing|completed|failed|cancelled
+  priority        String   @default("medium") // low|medium|high|critical
+  repository      String
+  branch          String
+  baseBranch      String   @default("main")
+  model           String   @default("glm-4.6")
+  provider        String   @default("zai")
+  progress        Int      @default(0)
+  totalSteps      Int      @default(0)
+  completedSteps  Int      @default(0)
+  pullRequestNum  Int?
+  headSha         String?
+  summary         String?
+  tags            String   @default("") // comma-separated
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  steps    Step[]
+  logs     LogEntry[]
+  changes  FileChange[]
+
+  @@index([status])
+  @@index([createdAt])
+}
+
+/// A single step in a task's plan.
+model Step {
+  id          String   @id @default(cuid())
+  taskId      String
+  order       Int
+  kind        String   // planning|exploration|implementation|testing|review|commit|pr
+  title       String
+  description String
+  status      String   @default("pending") // pending|in_progress|completed|failed|skipped
+  tool        String
+  toolInput   String
+  toolOutput  String?
+  reasoning   String?
+  startedAt   DateTime?
+  completedAt DateTime?
+  files       String   @default("") // newline-separated
+
+  task Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
+
+  @@index([taskId])
+}
+
+/// A single log line emitted during execution.
+model LogEntry {
+  id        String   @id @default(cuid())
+  taskId    String
+  stepId    String?
+  timestamp DateTime @default(now())
+  level     String   // debug|info|warn|error|success
+  source    String
+  message   String
+
+  task Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
+
+  @@index([taskId])
+}
+
+/// A file change produced by a step.
+model FileChange {
+  id        String   @id @default(cuid())
+  taskId    String
+  stepId    String
+  path      String
+  status    String   // added|modified|deleted|renamed
+  additions Int      @default(0)
+  deletions Int      @default(0)
+  diff      String   // JSON-encoded DiffLine[]
+  newContent String?
+
+  task Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
+
+  @@index([taskId])
+  @@index([stepId])
+}
