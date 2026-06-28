@@ -116,7 +116,7 @@ function Hero() {
           </Badge>
 
           <h1 className="text-balance text-4xl font-semibold tracking-tight sm:text-5xl lg:text-6xl">
-            <span className="text-gradient-foreground">The autonomous</span>
+            <span className="text-foreground">The autonomous</span>
             <br />
             <span className="text-gradient-primary">software engineer</span>
           </h1>
@@ -693,7 +693,7 @@ function FinalCTA() {
       <div className="absolute inset-0 bg-radial-fade" />
       <div className="relative mx-auto max-w-4xl px-4 text-center sm:px-6 lg:px-8">
         <h2 className="text-balance text-3xl font-semibold tracking-tight sm:text-4xl">
-          <span className="text-gradient-foreground">Ship your next PR</span>
+          <span className="text-foreground">Ship your next PR</span>
           <br />
           <span className="text-gradient-primary">with an AI pair engineer</span>
         </h2>
