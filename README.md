@@ -1,6 +1,6 @@
 # Forge — AI Software Engineer
 
-> An autonomous software engineering agent that plans, codes, tests, and ships pull requests. Inspired by **OpenHands** (formerly OpenDevin) and the **Devin** paradigm. Claude-powered reasoning, GitHub-native workflows, and a polished developer experience — deployable on the Vercel free tier.
+> An autonomous software engineering agent that plans, codes, tests, and ships pull requests. Claude-powered reasoning, GitHub-native workflows, and a polished developer experience — deployable on the Vercel free tier.
 
 <p align="center">
   <strong>
